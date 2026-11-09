@@ -1,7 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import pg from 'pg';
+import {getCACertificates} from 'node:tls';
 import {supabasePoolOptions} from './supabase.js';
-const certificate='-----BEGIN CERTIFICATE-----\nTEST CONFIGURATION ONLY\n-----END CERTIFICATE-----';
+const certificate=getCACertificates('default')[0];
 test('Supabase configuration requires credentials and a root certificate without leaking values',()=>{
  assert.throws(()=>supabasePoolOptions({}),/SUPABASE_DATABASE_URL/);
  assert.throws(()=>supabasePoolOptions({SUPABASE_DATABASE_URL:'postgresql://user:[YOUR-PASSWORD]@pooler.example.com:6543/postgres'}),/SUPABASE_DATABASE_PASSWORD/);
@@ -19,4 +20,8 @@ test('saved password overrides an inline placeholder or stale copied password',(
   const options=supabasePoolOptions({SUPABASE_DATABASE_URL:'  '+value+'  ',SUPABASE_DATABASE_PASSWORD:'current@password',SUPABASE_DATABASE_CA:certificate});
   assert.equal(decodeURIComponent(new URL(options.connectionString).password),'current@password');
  }
+});
+
+test('malformed certificate text is diagnosed before making a network connection',()=>{
+ assert.throws(()=>supabasePoolOptions({SUPABASE_DATABASE_URL:'postgresql://user:password@pooler.example.com:6543/postgres',SUPABASE_DATABASE_CA:'-----BEGIN CERTIFICATE-----\nnot a real certificate\n-----END CERTIFICATE-----'}),/not valid certificate text/);
 });

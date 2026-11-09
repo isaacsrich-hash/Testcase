@@ -1,4 +1,5 @@
 import pg from 'pg';
+import {X509Certificate} from 'node:crypto';
 import {getCACertificates} from 'node:tls';
 import {StorageConfigurationError} from './storage-errors.js';
 // Only the server reads these variables. Never use VITE_ prefixes for them.
@@ -14,6 +15,7 @@ export function supabasePoolOptions(environment=process.env){
  if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname||!url.password)throw new StorageConfigurationError('Copy the complete Supabase Transaction pooler connection string.');
  const ca=environment.SUPABASE_DATABASE_CA?.replace(/\\n/g,'\n').trim();
  if(!ca?.includes('-----BEGIN CERTIFICATE-----')||!ca.includes('-----END CERTIFICATE-----'))throw new StorageConfigurationError('Set SUPABASE_DATABASE_CA to the downloaded Supabase server root certificate.');
+ try{new X509Certificate(ca);}catch{throw new StorageConfigurationError('The saved certificate is not valid certificate text. Copy the complete downloaded .crt file into SUPABASE_DATABASE_CA, then redeploy.');}
  // node-postgres otherwise lets connection-string SSL parameters replace the
  // verified TLS configuration below. Always enforce encryption + server trust.
  for(const key of ['ssl','sslmode','sslcert','sslkey','sslrootcert','uselibpqcompat'])url.searchParams.delete(key);
