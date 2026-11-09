@@ -22,6 +22,7 @@ test('Netlify function routing, Postgres migration, full match scoring, chat and
   assert.equal(response.statusCode,expected,text);assert.equal(response.headers['cache-control'],'no-store');
   return JSON.parse(text);
  }
+ assert.equal((await api('/health')).status,'ready');
  const a=await api('/session',{name:'Alex'}),b=await api('/session',{name:'Sam'},null,200,false);
  let r=await api('/rooms',{practice:false,title:'Netlify game night'},a.token);
  await api('/rooms/'+r.id,null,b.token,404);

@@ -99,3 +99,17 @@ Official references:
 - https://supabase.com/docs/guides/database/connecting-to-postgres
 - https://supabase.com/docs/guides/platform/ssl-enforcement
 - https://supabase.com/pricing
+
+### Storage diagnostic codes
+
+The public `/api/health` endpoint checks access to the four game tables without creating profiles or returning player records. Its fixed error codes help diagnose setup without exposing connection details:
+
+- `DB_CONFIG`: a required server variable is missing or malformed.
+- `DB_LOGIN`: Supabase rejected the database credentials; verify the saved password and exact pooler username/host.
+- `DB_CERTIFICATE`: certificate verification failed; replace the CA variable with the complete project root certificate, then redeploy. Keep verification enabled.
+- `DB_TABLES`: the selected database is missing game tables/columns; run the complete setup SQL in that same project.
+- `DB_ACCESS`: the database user cannot access the private game schema.
+- `DB_CONNECTION`: check the project is active and the Transaction pooler address is correct.
+- `DB_BUSY`: connection limits have been reached; wait and retry.
+
+The separately saved `SUPABASE_DATABASE_PASSWORD` is authoritative even if an inline password was pasted into the connection string. Raw `[YOUR-PASSWORD]` and URL-encoded placeholders are both supported.

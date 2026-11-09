@@ -1,3 +1,4 @@
+import {storageProblem} from '../../server/storage-errors.js';
 import {createSupabasePool} from '../../server/supabase.js';
 import {createNetlifyHandler} from '../../server/netlify-handler.js';
 import {createPostgresStore} from '../../server/store.js';
@@ -9,7 +10,8 @@ export const handler=async(event,context)=>{
   handle??=createNetlifyHandler(createPostgresStore(createSupabasePool()));
   return await handle(event,context);
  }catch(e){
-  console.error('Kindred database initialization failed:',e.code||e.name);
-  return {statusCode:503,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify({error:'Game storage is not connected. Complete the Supabase setup in the project instructions, then redeploy.'})};
+  const issue=storageProblem(e)||{code:'DB_UNAVAILABLE',error:'Game storage is unavailable. Ask the host to check the game service. (DB_UNAVAILABLE)'};
+  console.error('Spite n Malice storage initialization failed:',issue.code);
+  return {statusCode:503,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(issue)};
  }
 };

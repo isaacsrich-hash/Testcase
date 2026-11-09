@@ -1,4 +1,5 @@
 import express from 'express';
+import {storageProblem} from './storage-errors.js';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {resolve} from 'node:path';
 import {createGame,move,botTurn,publicGame} from './game.js';
@@ -21,6 +22,14 @@ export function createApp(store,{serveStatic=true}={}) {
   if(!r||!await db.get('SELECT * FROM members WHERE room=? AND "user"=?',id,user.id))throw new HttpError(404,'Match not found.');
   return r;
  }
+ app.get('/api/health',route(async({db})=>{
+  // Readiness checks do not create profiles or reveal player records.
+  await db.get('SELECT id,token,name,country,family FROM users LIMIT 0');
+  await db.get('SELECT id,title,family,host,practice,code,state,version,created FROM rooms LIMIT 0');
+  await db.get('SELECT room,"user" FROM members LIMIT 0');
+  await db.get('SELECT id,room,"user",name,body,created FROM messages LIMIT 0');
+  return {status:'ready'};
+ },{anonymous:true}));
  app.post('/api/session',route(async({req,db})=>{
   let u=await db.get('SELECT * FROM users WHERE token=?',req.body.token||'');
   if(!u&&req.body.restore)throw new HttpError(401,'This recovery file is not recognized by this server.');
@@ -89,6 +98,8 @@ export function createApp(store,{serveStatic=true}={}) {
  app.use('/api',(req,res)=>res.status(404).json({error:'Not found.'}));
  if(serveStatic){app.use(express.static('dist'));app.get('/{*splat}',(req,res)=>res.sendFile(resolve('dist/index.html')));}
  app.use((err,req,res,next)=>{
+  const issue=storageProblem(err);
+  if(issue){console.error('Spite n Malice storage failure:',issue.code);return res.status(503).json(issue);}
   const status=err.status||(err.code?500:400);
   if(status>=500)console.error('Kindred request failed:',err.code||err.name);
   res.status(status).json({error:status>=500?'The game service is unavailable. Please try again.':err.message||'Something went wrong.'});

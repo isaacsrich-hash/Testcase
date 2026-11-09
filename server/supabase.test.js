@@ -14,3 +14,9 @@ test('Supabase options encode raw password and enforce verified TLS over URL fla
  assert.equal(decodeURIComponent(url.password),password);assert.equal(url.port,'6543');assert.equal(url.searchParams.has('sslmode'),false);assert.equal(url.searchParams.has('sslrootcert'),false);
  assert.equal(url.searchParams.has('ssl'),false);assert.equal(new pg.Client(options).connectionParameters.ssl.rejectUnauthorized,true);assert.equal(options.ssl.rejectUnauthorized,true);assert.equal(options.ssl.ca,certificate);assert.equal(options.max,2);
 });
+test('saved password overrides an inline placeholder or stale copied password',()=>{
+ for(const value of ['postgresql://user:%5BYOUR-PASSWORD%5D@pooler.example.com:6543/postgres','postgresql://user:old-value@pooler.example.com:6543/postgres']){
+  const options=supabasePoolOptions({SUPABASE_DATABASE_URL:'  '+value+'  ',SUPABASE_DATABASE_PASSWORD:'current@password',SUPABASE_DATABASE_CA:certificate});
+  assert.equal(decodeURIComponent(new URL(options.connectionString).password),'current@password');
+ }
+});

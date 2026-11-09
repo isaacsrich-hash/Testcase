@@ -150,7 +150,7 @@ function App() {
     [message, setMessage] = useState(""),
     [sound, setSound] = useState(false),
     [copied, setCopied] = useState(false),
-    [connected, setConnected] = useState(true);
+    [connected, setConnected] = useState(false);
   const chatBottom = useRef(null),
     initialized = useRef(false);
   async function refresh() {
@@ -169,6 +169,7 @@ function App() {
         localStorage.setItem(tokenKey, auth);
         setUser(u);
         const d = await refresh();
+        setConnected(true);
         const code = new URLSearchParams(location.search).get("invite");
         if (code) {
           setModal({ type: "join", code });
@@ -186,6 +187,7 @@ function App() {
           await refresh();
         }
       } catch (e) {
+        setConnected(false);
         setError(e.message);
       } finally {
         setLoading(false);
