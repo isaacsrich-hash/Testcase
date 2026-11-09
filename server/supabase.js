@@ -1,4 +1,5 @@
 import pg from 'pg';
+import {getCACertificates} from 'node:tls';
 import {StorageConfigurationError} from './storage-errors.js';
 // Only the server reads these variables. Never use VITE_ prefixes for them.
 export function supabasePoolOptions(environment=process.env){
@@ -16,6 +17,10 @@ export function supabasePoolOptions(environment=process.env){
  // node-postgres otherwise lets connection-string SSL parameters replace the
  // verified TLS configuration below. Always enforce encryption + server trust.
  for(const key of ['ssl','sslmode','sslcert','sslkey','sslrootcert','uselibpqcompat'])url.searchParams.delete(key);
- return {connectionString:url.toString(),ssl:{ca,rejectUnauthorized:true},max:2,connectionTimeoutMillis:10000,idleTimeoutMillis:10000,allowExitOnIdle:true};
+ // Supabase's shared pooler may use a public CA. Explicit `ca` replaces
+ // Node's trust store, so add the project root instead of discarding the
+ // standard roots. Hostname and certificate verification remain enabled.
+ const trustedRoots=[...new Set([...getCACertificates('default'),ca])];
+ return {connectionString:url.toString(),ssl:{ca:trustedRoots,rejectUnauthorized:true},max:2,connectionTimeoutMillis:10000,idleTimeoutMillis:10000,allowExitOnIdle:true};
 }
 export function createSupabasePool(){return new pg.Pool(supabasePoolOptions());}

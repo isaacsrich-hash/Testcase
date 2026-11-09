@@ -12,7 +12,7 @@ test('Supabase options encode raw password and enforce verified TLS over URL fla
  const options=supabasePoolOptions({SUPABASE_DATABASE_URL:'postgresql://postgres.project:[YOUR-PASSWORD]@pooler.example.com:6543/postgres?ssl=0&sslmode=disable&sslrootcert=bad',SUPABASE_DATABASE_PASSWORD:password,SUPABASE_DATABASE_CA:certificate});
  const url=new URL(options.connectionString);
  assert.equal(decodeURIComponent(url.password),password);assert.equal(url.port,'6543');assert.equal(url.searchParams.has('sslmode'),false);assert.equal(url.searchParams.has('sslrootcert'),false);
- assert.equal(url.searchParams.has('ssl'),false);assert.equal(new pg.Client(options).connectionParameters.ssl.rejectUnauthorized,true);assert.equal(options.ssl.rejectUnauthorized,true);assert.equal(options.ssl.ca,certificate);assert.equal(options.max,2);
+ assert.equal(url.searchParams.has('ssl'),false);assert.equal(new pg.Client(options).connectionParameters.ssl.rejectUnauthorized,true);assert.equal(options.ssl.rejectUnauthorized,true);assert.ok(options.ssl.ca.includes(certificate));assert.ok(options.ssl.ca.length>1);assert.equal(options.max,2);
 });
 test('saved password overrides an inline placeholder or stale copied password',()=>{
  for(const value of ['postgresql://user:%5BYOUR-PASSWORD%5D@pooler.example.com:6543/postgres','postgresql://user:old-value@pooler.example.com:6543/postgres']){
