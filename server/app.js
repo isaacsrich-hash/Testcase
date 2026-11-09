@@ -46,7 +46,7 @@ export function createApp(store,{serveStatic=true}={}) {
   const g=practice?createGame(players):{players,status:'waiting',builds:[[],[],[],[]],turn:0,log:[],deck:[],recycle:[]};
   await db.run('INSERT INTO rooms(id,title,family,host,practice,code,state,created) VALUES(?,?,?,?,?,?,?,?)',id,clean(req.body.title)||'Sunday family table',user.family,user.id,Number(practice),code,JSON.stringify(g),new Date().toISOString());
   await db.run('INSERT INTO members(room,"user") VALUES(?,?)',id,user.id);
-  if(practice)await db.run('INSERT INTO messages(room,"user",name,body,created) VALUES(?,?,?,?,?)',id,'system','Kindred','Welcome to your practice table. Your progress is saved after every move.',new Date().toISOString());
+  if(practice)await db.run('INSERT INTO messages(room,"user",name,body,created) VALUES(?,?,?,?,?)',id,'system','Spite n Malice','Welcome to your practice table. Your progress is saved after every move.',new Date().toISOString());
   return roomView(db,await db.get('SELECT * FROM rooms WHERE id=?',id),user.id);
  }));
  app.post('/api/join',route(async({req,db,user})=>{

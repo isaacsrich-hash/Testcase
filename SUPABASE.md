@@ -1,4 +1,4 @@
-# Kindred: free Supabase storage with Netlify hosting
+# Spite n Malice: free Supabase storage with Netlify hosting
 
 The website stays on Netlify. Game records are stored in Supabase Postgres, on its Free plan. This setup is easiest from a computer; the completed game works on phones.
 
@@ -6,7 +6,7 @@ The website stays on Netlify. Game records are stored in Supabase Postgres, on i
 
 1. Open https://supabase.com/dashboard and sign in (you can use GitHub).
 2. Create an organization if prompted. Choose the **Free** plan.
-3. Select **New project**. Name it **Kindred**.
+3. Select **New project**. Name it **Spite n Malice**.
 4. Generate a strong database password and save it privately in your password manager. You will enter it directly into Netlify, not into chat or GitHub.
 5. Choose a region reasonably close to the family members who will play most often. Create the project and wait for it to become ready.
 
@@ -34,7 +34,7 @@ The website stays on Netlify. Game records are stored in Supabase Postgres, on i
 
 ## 5. Add three settings in Netlify
 
-1. Sign in at https://app.netlify.com and open the existing **Kindred game project**. You do not need to create another website.
+1. Sign in at https://app.netlify.com and open the existing **Spite n Malice game project**. You do not need to create another website.
 2. Open **Environment variables** in the project menu. In some layouts it is under **Project configuration → Environment variables**.
 3. Add the variables below. Apply them to **Production** and ensure the **Functions** scope is included (or choose all scopes if that is the only option your plan offers).
 

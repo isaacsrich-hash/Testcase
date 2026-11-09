@@ -1,1 +1,27 @@
-{"name":"kindred","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"concurrently \"node --watch server/index.js\" \"vite --host 0.0.0.0\"","build":"vite build","start":"node server/index.js","test":"node --test server/*.test.js"},"dependencies":{"express":"^5.1.0","lucide-react":"^0.468.0","pg":"^8.23.1","react":"^19.0.0","react-dom":"^19.0.0","serverless-http":"^4.0.0"},"devDependencies":{"@electric-sql/pglite":"^0.2.17","@playwright/test":"^1.51.0","@vitejs/plugin-react":"^4.3.4","concurrently":"^9.1.2","vite":"^6.1.0"}}
+{
+  "name": "spite-n-malice",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"node --watch server/index.js\" \"vite --host 0.0.0.0\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test server/*.test.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "lucide-react": "^0.468.0",
+    "pg": "^8.23.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "serverless-http": "^4.0.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.2.17",
+    "@playwright/test": "^1.51.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "vite": "^6.1.0"
+  }
+}

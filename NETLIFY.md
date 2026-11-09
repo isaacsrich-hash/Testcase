@@ -1,4 +1,4 @@
-# Kindred on Netlify, with free Supabase storage
+# Spite n Malice on Netlify, with free Supabase storage
 
 Follow the complete setup checklist in [SUPABASE.md](SUPABASE.md).
 

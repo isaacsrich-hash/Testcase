@@ -1,4 +1,4 @@
-# Kindred
+# Spite n Malice
 
 A family-focused Spite & Malice game, built with React, Vite, Express, and SQLite. Original visual design; no Monopoly branding or assets.
 
