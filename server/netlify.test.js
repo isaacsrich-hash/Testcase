@@ -10,7 +10,11 @@ test('Netlify function routing, Postgres migration, full match scoring, chat and
  let pg=new PGlite(directory);let released=0;
  const pool={connect:async()=>({query:(text,params)=>pg.query(text,params),release:()=>released++})};
  t.after(async()=>{await pg.close();await rm(directory,{recursive:true,force:true});});
- await pg.exec(await readFile(new URL('../netlify/database/migrations/0001_create_kindred.sql',import.meta.url),'utf8'));
+ const schema=await readFile(new URL('../database/supabase.sql',import.meta.url),'utf8');
+ await pg.exec(schema);
+ await pg.exec(schema); // Re-running the setup must not delete existing tables.
+ assert.equal((await pg.query("SELECT table_name FROM information_schema.tables WHERE table_schema='kindred'")).rows.length,4);
+ assert.equal((await pg.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name='users'")).rows.length,0);
  let handler=createNetlifyHandler(createPostgresStore(pool));
  async function api(path,body,token,expected=200,direct=true){
   const response=await handler({httpMethod:body?'POST':'GET',path:(direct?'/.netlify/functions/api':'/api')+path,headers:{'content-type':'application/json',authorization:'Bearer '+(token||'')},body:body?JSON.stringify(body):'',isBase64Encoded:false},{});
@@ -29,6 +33,7 @@ test('Netlify function routing, Postgres migration, full match scoring, chat and
  await api('/rooms/'+r.id+'/move',{type:'discard',index:0,pile:1,version:r.version-1},b.token,409);
  await api('/rooms/'+r.id+'/chat',{body:'Hello from another country!'},a.token);
  const version=r.version;
+ await pg.exec(schema); // Setup rerun must also preserve existing matches and chat.
  await pg.close();pg=new PGlite(directory);
  handler=createNetlifyHandler(createPostgresStore(pool));
  r=await api('/rooms/'+r.id,null,b.token);

@@ -1,4 +1,4 @@
-// Shared query interface for local SQLite and Netlify's managed Postgres.
+// Shared query interface for local SQLite and Supabase Postgres.
 export const sqliteSchema = `
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,token TEXT UNIQUE,name TEXT,country TEXT,family TEXT);
@@ -37,7 +37,7 @@ export function createPostgresStore(pool) {
    const client=await pool.connect();
    const query=async(q,p)=>(await client.query(sql(q),p)).rows;
    const queries={get:async(q,...p)=>(await query(q,p))[0],all:async(q,...p)=>query(q,p),run:async(q,...p)=>query(q,p)};
-   try{await client.query('BEGIN');const result=await fn(queries);await client.query('COMMIT');return result;}
+   try{await client.query('BEGIN');await client.query('SET LOCAL search_path TO kindred, pg_catalog');const result=await fn(queries);await client.query('COMMIT');return result;}
    catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}
   },
  };

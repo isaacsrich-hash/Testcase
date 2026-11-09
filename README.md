@@ -22,9 +22,9 @@ npm start
 
 Express serves the built interface and API on `PORT` (default 3001). Deploy this process behind HTTPS on a public host for family in different countries. No deployment has been performed. Use a persistent writable volume for `DATA_DIR` (default `./data`). Back up the SQLite database; do not deploy it on ephemeral storage. A single server process is the supported topology.
 
-## Netlify deployment
+## Netlify deployment with Supabase storage
 
-See [NETLIFY.md](NETLIFY.md) for the new-site setup. The website and API can run on Netlify using Netlify Functions and Netlify Database. Production data is stored in managed Postgres; local development continues using SQLite. No live site has been deployed.
+Follow [SUPABASE.md](SUPABASE.md) for the full click-by-click setup. The website and API run on Netlify; Supabase Postgres stores the saved games. Supabase has a Free plan with usage limits. This version does not require or provision Netlify Database. Local development continues using SQLite. Live Supabase access needs the server-side settings described in the guide.
 
 ## Features
 
