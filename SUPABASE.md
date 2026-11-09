@@ -25,24 +25,22 @@ The website stays on Netlify. Game records are stored in Supabase Postgres, on i
 3. Copy the complete PostgreSQL connection string. Leave `[YOUR-PASSWORD]` in it; the updated server inserts your separately supplied password safely.
 4. Use this connection string, not the project HTTPS URL and not a publishable/anon/service-role API key. You do not need those API keys for this app.
 
-## 4. Download the database's root certificate
+## 4. Certificate setup is automatic
 
-1. Open **Database → Settings** (or **Project Settings → Database**, depending on the dashboard layout).
-2. Find **SSL Configuration** and download the **server root / CA certificate**.
-3. Open the downloaded `.crt` file in a plain-text editor. Copy its complete text, including `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`.
-4. Keep this text available for the next step. It lets the game encrypt the connection and verify that it is talking to your Supabase server.
+The app now bundles Supabase's official public root certificate alongside Node's standard trusted certificates. You do not need to download, open, or paste a certificate. TLS encryption and hostname/certificate verification remain enabled.
 
-## 5. Add three settings in Netlify
+If you already added `SUPABASE_DATABASE_CA`, the app no longer reads that variable. It can be left in place or removed; it does not affect the connection.
+
+## 5. Add two settings in Netlify
 
 1. Sign in at https://app.netlify.com and open the existing **Spite n Malice game project**. You do not need to create another website.
 2. Open **Environment variables** in the project menu. In some layouts it is under **Project configuration → Environment variables**.
-3. Add the variables below. Apply them to **Production** and ensure the **Functions** scope is included (or choose all scopes if that is the only option your plan offers).
+3. Add the two variables below. Apply them to **Production** and ensure the **Functions** scope is included (or choose all scopes if that is the only option your plan offers).
 
 | Name | Value |
 | --- | --- |
 | `SUPABASE_DATABASE_URL` | The full **Transaction pooler** PostgreSQL connection string from step 3, leaving `[YOUR-PASSWORD]` in place. |
 | `SUPABASE_DATABASE_PASSWORD` | The actual database password saved in step 1. Paste the raw password; do not URL-encode it or surround it with quotes. |
-| `SUPABASE_DATABASE_CA` | The complete certificate text from step 4, including both BEGIN/END lines. Multiline text is supported. |
 
 If the UI offers a **Contains secret values** option, enable it for the connection string and password. Keep these settings server-side: never prefix them with `VITE_`, commit them to GitHub, or send them in chat/screenshots.
 
@@ -82,8 +80,8 @@ Automatic database backups are not included in Supabase's Free plan. Keep period
 ## If something goes wrong
 
 - **The old error still says “Enable Netlify Database”:** the old app version is deployed. Check the latest Git commit and redeploy from `main`.
-- **“Game storage is not connected”:** confirm all three variables are saved for Production/Functions and redeploy after saving them.
-- **Certificate errors in the `api` Function log:** copy the complete CA certificate from your project's Database Settings. Do not disable TLS verification.
+- **“Game storage is not connected”:** confirm both connection variables are saved for Production/Functions and redeploy after saving them.
+- **Certificate errors in the `api` Function log:** make sure the newest code is deployed. It bundles the official Supabase root automatically; do not disable TLS verification.
 - **Authentication failed:** check the database password, the project-specific username in the copied pooler URL, and port 6543.
 - **`kindred.users` / relation missing:** run `database/supabase.sql` in the SQL Editor of the same Supabase project used in your connection string.
 - **Connection timeouts:** ensure the Supabase project is active and use the Transaction pooler endpoint rather than the direct IPv6-only connection.
@@ -92,7 +90,7 @@ For help, share a screenshot with connection strings, passwords, and player keys
 
 ## Verification and remaining setup
 
-The application is checked locally with game/API tests, the Postgres schema and full multiplayer flow on embedded Postgres, strict TLS configuration tests, and the Netlify Function bundler. A live connection to your Supabase project cannot be verified until you configure the database and Netlify environment variables. No Supabase project has been created by this chat.
+The application is checked locally with game/API tests, the Postgres schema and full multiplayer flow on embedded Postgres, strict TLS configuration and bundled CA integrity tests, and the Netlify Function bundler. A live connection to your Supabase project cannot be verified until you configure the database and Netlify environment variables. No Supabase project has been created by this chat.
 
 Official references:
 
@@ -106,10 +104,14 @@ The public `/api/health` endpoint checks access to the four game tables without 
 
 - `DB_CONFIG`: a required server variable is missing or malformed.
 - `DB_LOGIN`: Supabase rejected the database credentials; verify the saved password and exact pooler username/host.
-- `DB_CERTIFICATE`: certificate verification failed; replace the CA variable with the complete project root certificate, then redeploy. Keep verification enabled.
+- `DB_CERTIFICATE`: certificate verification failed; check the deployed version and provider certificate validity. The official CA is bundled automatically. Keep verification enabled.
 - `DB_TABLES`: the selected database is missing game tables/columns; run the complete setup SQL in that same project.
 - `DB_ACCESS`: the database user cannot access the private game schema.
 - `DB_CONNECTION`: check the project is active and the Transaction pooler address is correct.
 - `DB_BUSY`: connection limits have been reached; wait and retry.
 
 The separately saved `SUPABASE_DATABASE_PASSWORD` is authoritative even if an inline password was pasted into the connection string. Raw `[YOUR-PASSWORD]` and URL-encoded placeholders are both supported.
+
+### Certificate source and integrity
+
+The public provider root in `server/supabase-ca.js` comes from the download URL configured in [Supabase Studio's official source](https://github.com/supabase/supabase/blob/master/apps/studio/hooks/custom-content/custom-content.json). Its SHA-256 fingerprint, CA status, validity dates, and self-signature are checked by the test suite. No private certificate or key is bundled.
