@@ -1,0 +1,18 @@
+import {mkdirSync} from 'node:fs';
+import {chromium} from 'playwright-core';
+mkdirSync('/tmp/kindred-checks',{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1440,height:1050},deviceScaleFactor:1});
+page.on('pageerror',e=>console.log('PAGE ERROR',e.message));
+await page.goto('http://127.0.0.1:5173');await page.getByText('Your move, Alex!').waitFor();await page.screenshot({path:'/tmp/kindred-checks/desktop.png',fullPage:true});
+console.log('Desktop title',await page.title());
+await page.getByRole('textbox',{name:'Message your table'}).fill('Hello family!');await page.getByRole('button',{name:'Send message',exact:true}).click();await page.getByText('Hello family!',{exact:true}).waitFor();
+await page.reload();await page.getByText('Hello family!',{exact:true}).waitFor();console.log('Saved chat reload passed');
+await page.locator('.hand-cards .card').first().click();await page.getByRole('button',{name:'Discard pile 1, empty',exact:true}).click();await page.waitForTimeout(300);console.log('Practice hand selection and discard passed');
+await page.getByRole('button',{name:'New family game',exact:true}).click();await page.getByRole('button',{name:'Create family table',exact:false}).click();await page.getByRole('heading',{name:'Your people, one link away.'}).waitFor();
+const invite=await page.locator('.modal input').inputValue();console.log('Invite generated',invite);
+const page2=await (await browser.newContext()).newPage();await page2.goto(invite);await page2.getByRole('button',{name:'Join the family table',exact:false}).click();await page2.getByRole('heading',{name:'The best games start with family.'}).waitFor();
+await page.getByRole('button',{name:'Close dialog'}).click();await page.getByRole('button',{name:'Start game',exact:true}).waitFor({state:'visible'});await page.waitForTimeout(2300);await page.getByRole('button',{name:'Start game',exact:true}).click();await page.getByText('Your move, Alex!').waitFor();await page2.getByText('Alex’s turn').waitFor();console.log('Two separate browser sessions joined and started multiplayer');
+await page.getByRole('textbox',{name:'Message your table'}).fill('Across the world!');await page.getByRole('button',{name:'Send message',exact:true}).click();await page2.getByText('Across the world!',{exact:true}).waitFor();console.log('Multiplayer chat sync passed');
+await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/kindred-checks/mobile.png',fullPage:true});console.log('Mobile overflow',await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth));
+const oldId=await page.evaluate(()=>localStorage.getItem('kindred-token'));const response=await page.request.post('http://127.0.0.1:5173/api/session',{data:{token:oldId,restore:true}});if(response.status()!==200)throw Error('Recovery failed');console.log('Player-key recovery verified');await browser.close();
