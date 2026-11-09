@@ -51,8 +51,8 @@ export function createApp(store,{serveStatic=true}={}) {
  app.post('/api/rooms',route(async({req,db,user})=>{
   const practice=!!req.body.practice,id=randomUUID(),code=randomBytes(5).toString('hex');
   const players=[{id:user.id,name:user.name,country:user.country}];
-  if(practice)players.push({id:'bot-mia',name:'Mia',country:'United Kingdom',bot:true},{id:'bot-leo',name:'Leo',country:'Australia',bot:true});
-  const g=practice?createGame(players):{players,status:'waiting',builds:[[],[],[],[]],turn:0,log:[],deck:[],recycle:[]};
+  if(practice)players.push({id:'bot-mia',name:'Mia',country:'United Kingdom',bot:true});
+  const g=practice?createGame(players):{rulesVersion:2,players,status:'waiting',builds:[[]],turn:0,log:[],deck:[],recycle:[]};
   await db.run('INSERT INTO rooms(id,title,family,host,practice,code,state,created) VALUES(?,?,?,?,?,?,?,?)',id,clean(req.body.title)||'Sunday family table',user.family,user.id,Number(practice),code,JSON.stringify(g),new Date().toISOString());
   await db.run('INSERT INTO members(room,"user") VALUES(?,?)',id,user.id);
   if(practice)await db.run('INSERT INTO messages(room,"user",name,body,created) VALUES(?,?,?,?,?)',id,'system','Spite n Malice','Welcome to your practice table. Your progress is saved after every move.',new Date().toISOString());

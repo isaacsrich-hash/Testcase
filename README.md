@@ -1,6 +1,6 @@
 # Spite n Malice
 
-A family-focused Spite & Malice game, built with React, Vite, Express, and SQLite. Original bright cartoon design with illustrated card characters, comic lettering, and a responsive clubhouse layout. Fonts are served locally with their licenses in `public/fonts/`.
+A family-focused Spite & Malice game, built with React, Vite, Express, and SQLite. A traditional green-and-gold card table with large face-rank cards, stock on the left, discard piles in the middle, and a fanned hand on the right. Fonts are served locally with their licenses in `public/fonts/`.
 
 ## Run
 
@@ -29,8 +29,8 @@ Follow [SUPABASE.md](SUPABASE.md) for the full click-by-click setup. The website
 ## Features
 
 - 2–4 players in private, invite-code rooms; host starts once everyone joins.
-- 3-player practice with bots; separate from multiplayer leaderboard scoring.
-- Real Spite & Malice rules: 20 stock cards, five-card hands, four personal discards, four shared 1–12 builds, wilds, recycled completed builds.
+- Two-player practice against a bot; separate from multiplayer leaderboard scoring. Existing larger practice matches remain resumable.
+- House rules: three standard 52-card decks, 20 stock cards, five-card hands and four personal discard piles. Shared runs build A–2–…–10–J–Q in any suit. Kings are wild for 2 through Q; only an actual ace can open a pile. Every new ace reveals another space, with no four-pile limit. Completed runs recycle into the draw deck. No jokers or separate W cards.
 - Authoritative server validates turns, hidden hands, legal plays, and stale actions.
 - SQLite commits each move, lobby join, and chat message. Two-second polling syncs devices. Match history resumes games after browser and server restarts.
 - Private table chat and quick reactions.
@@ -52,3 +52,9 @@ npm run build
 Tests cover deck conservation, legal/illegal moves, turn enforcement, wilds, recycling, victory/scoring, hand refill, hidden information, and full bot matches. Netlify adapter tests additionally exercise Function routing, Postgres migrations, a complete multiplayer match, and database reopen recovery using embedded Postgres. Browser checks also exercised two isolated players joining, starting, chat synchronization, reload persistence, desktop/mobile rendering, and overflow. API integration checks exercised authorization, stale-action rejection, and SQLite recovery after a server restart.
 
 With the development server running, browser checks can be repeated using `node scripts/browser-smoke.mjs`. Set `CHROMIUM_PATH` if Chromium is installed somewhere other than `/usr/bin/chromium`. Screenshots are written to `/tmp/kindred-checks`.
+
+## Rules and saved-game compatibility
+
+New games use suited card objects with ranks A through K. Existing numeric-card games keep their cards, chat, scores, and move history; old zero-valued wilds are interpreted and displayed as kings, 11 as J, and 12 as Q. Active old building piles are retained and surplus empty placeholders become one expandable ace slot. This conversion is deterministic on read and is saved with the next valid move. No database migration or reset is needed.
+
+For the focused browser checks, run `node scripts/table-smoke.mjs` while the development server is running. It starts a separate temporary game database, constructs a card-conserving test deal, and checks ace-only openings, king substitution, more than four simultaneous piles, dragging, layout order, turn ending, and reload persistence. It leaves real player data untouched.

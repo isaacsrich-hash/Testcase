@@ -8,7 +8,7 @@ await page.goto('http://127.0.0.1:5173');await page.getByText('Your move, Alex!'
 console.log('Desktop title',await page.title());
 await page.getByRole('textbox',{name:'Message your table'}).fill('Hello family!');await page.getByRole('button',{name:'Send message',exact:true}).click();await page.getByText('Hello family!',{exact:true}).waitFor();
 await page.reload();await page.getByText('Hello family!',{exact:true}).waitFor();console.log('Saved chat reload passed');
-await page.locator('.hand-cards .card').first().click();await page.getByRole('button',{name:'Discard pile 1, empty',exact:true}).click();await page.waitForTimeout(300);console.log('Practice hand selection and discard passed');
+await page.locator('.own-lane .hand-cards .playing-card').first().click();await page.getByRole('button',{name:'Discard pile 1, empty',exact:true}).click();await page.waitForTimeout(300);console.log('Practice hand selection and discard passed');
 await page.getByRole('button',{name:'New family game',exact:true}).click();await page.getByRole('button',{name:'Create family table',exact:false}).click();await page.getByRole('heading',{name:'Your people, one link away.'}).waitFor();
 const invite=await page.locator('.modal input').inputValue();console.log('Invite generated',invite);
 const page2=await (await browser.newContext()).newPage();await page2.goto(invite);await page2.getByRole('button',{name:'Join the family table',exact:false}).click();await page2.getByRole('heading',{name:'The best games start with family.'}).waitFor();

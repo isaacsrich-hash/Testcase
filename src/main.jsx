@@ -41,6 +41,8 @@ import {
 } from "lucide-react";
 import "./style.css";
 import "./comic.css";
+import "./table.css";
+import GameTable from "./GameTable.jsx";
 // Preserve existing player sessions and recovery-file compatibility after rebranding.
 const tokenKey = "kindred-token";
 let auth = localStorage.getItem(tokenKey) || "";
@@ -133,56 +135,6 @@ function Avatar({
     </span>
   );
 }
-function Card({
-  value,
-  onClick,
-  selected,
-  back = false,
-  empty = false,
-  small = false,
-  label,
-  disabled = false,
-}) {
-  return (
-    <button
-      disabled={disabled}
-      aria-label={
-        label ||
-        (back
-          ? "Face down card"
-          : empty
-            ? "Empty card slot"
-            : value === 0
-              ? "Wild card"
-              : `Card ${value}`)
-      }
-      onClick={onClick}
-      className={`card ${back ? "card-back" : ""} ${empty ? "card-empty" : ""} ${value === 0 && !empty ? "wild" : ""} ${selected ? "selected" : ""} ${small ? "small" : ""} ${!empty && value > 0 && value % 2 === 0 ? "red" : ""}`}
-    >
-      {back ? (
-        <span className="back-medallion">
-          <Spade size={22} />
-        </span>
-      ) : empty ? (
-        <Plus size={21} />
-      ) : (
-        <>
-          <span className="card-corner">
-            {value === 0 ? "W" : value}
-            <span>{value === 0 ? "✦" : "♦"}</span>
-          </span>
-          <span className="card-symbol">
-            {value === 0 ? <Sparkles /> : value % 2 === 0 ? "♦" : <Spade />}
-          </span>
-          <span className="card-corner bottom">
-            {value === 0 ? "W" : value}
-            <span>{value === 0 ? "✦" : "♦"}</span>
-          </span>
-        </>
-      )}
-    </button>
-  );
-}
 function App() {
   const [user, setUser] = useState(null),
     [dashboard, setDashboard] = useState({ rooms: [], leaderboard: [] }),
@@ -261,10 +213,8 @@ function App() {
     };
   }, [room?.id]);
   useEffect(() => {
-    chatBottom.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-    });
+    const messages = chatBottom.current?.parentElement;
+    if (messages) messages.scrollTop = messages.scrollHeight;
   }, [room?.messages?.length]);
   useEffect(() => {
     if (!toast) return;
@@ -275,6 +225,7 @@ function App() {
     if (busy) return;
     setBusy(true);
     setError("");
+    setToast("");
     try {
       await fn();
     } catch (e) {
@@ -310,14 +261,14 @@ function App() {
       o.onended = () => a.close();
     } catch {}
   }
-  async function play(target) {
-    if (!selected) {
+  async function play(target, cardSelection = selected) {
+    if (!cardSelection) {
       setToast("Select a card from your hand, stock, or discard pile first.");
       return;
     }
     await task(async () => {
       const r = await api("/rooms/" + room.id + "/move", {
-        ...selected,
+        ...cardSelection,
         type: "play",
         target,
         version: room.version,
@@ -334,8 +285,8 @@ function App() {
       await refresh();
     });
   }
-  async function discard(pile) {
-    if (selected?.source !== "hand") {
+  async function discard(pile, cardSelection = selected) {
+    if (cardSelection?.source !== "hand") {
       setToast(
         "Choose a card from your hand, then a discard pile to end your turn.",
       );
@@ -344,7 +295,7 @@ function App() {
     await task(async () => {
       const r = await api("/rooms/" + room.id + "/move", {
         type: "discard",
-        index: selected.index,
+        index: cardSelection.index,
         pile,
         version: room.version,
       });
@@ -363,10 +314,7 @@ function App() {
       setToast("Copy the invitation link shown below.");
     }
   }
-  const g = room?.state,
-    me = g?.players.find((p) => p.id === user?.id),
-    opponents = g?.players.filter((p) => p.id !== user?.id) || [],
-    myTurn = g?.status === "active" && g.players[g.turn]?.id === user?.id;
+  const g = room?.state;
   const completed = dashboard.rooms.filter(
       (r) => r.state.status === "completed",
     ),
@@ -385,7 +333,7 @@ function App() {
     ["history", History, "Match history"],
   ];
   return (
-    <div className="app-shell">
+    <div className={"app-shell " + (page === "table" ? "table-screen" : "")}>
       <aside className="sidebar">
         <a
           className="brand"
@@ -572,16 +520,14 @@ function App() {
                   <button
                     className="hero-join"
                     onClick={() =>
-                      document
-                        .querySelector(".game-panel")
-                        ?.scrollIntoView({
-                          behavior: window.matchMedia(
-                            "(prefers-reduced-motion: reduce)",
-                          ).matches
-                            ? "auto"
-                            : "smooth",
-                          block: "start",
-                        })
+                      document.querySelector(".game-panel")?.scrollIntoView({
+                        behavior: window.matchMedia(
+                          "(prefers-reduced-motion: reduce)",
+                        ).matches
+                          ? "auto"
+                          : "smooth",
+                        block: "start",
+                      })
                     }
                   >
                     <Play size={15} /> Play this hand <ArrowRight size={14} />
@@ -717,7 +663,12 @@ function App() {
           {page === "table" ? (
             <div className="game-layout">
               <div className="game-column">
-                <section className="game-panel">
+                <section
+                  className={
+                    "game-panel " +
+                    (g && g.status !== "waiting" ? "active-panel" : "")
+                  }
+                >
                   <div className="game-panel-head">
                     <div className="game-title">
                       <span className="table-icon">
@@ -727,7 +678,7 @@ function App() {
                         <h2>{room?.title || "Your family table"}</h2>
                         <span>
                           {room?.practice
-                            ? "A practice match · 3 players"
+                            ? `A practice match · ${g?.players.length || 2} players`
                             : `${g?.players.length || 0} of 4 seats filled · Private table`}
                         </span>
                       </div>
@@ -825,299 +776,36 @@ function App() {
                       </p>
                     </div>
                   ) : g ? (
-                    <>
-                      <div className="felt-surround">
-                        <div className="felt-table">
-                          <div className="felt-outline" />
-                          <div className="table-watermark">
-                            <Spade size={42} />
-                            <span>
-                              SPITE <i>n</i> MALICE
-                            </span>
-                            <small>PLAY NICE. OR DON’T.</small>
-                          </div>
-                          <div className="opponents">
-                            {opponents.map((p, i) => (
-                              <div
-                                key={p.id}
-                                className={
-                                  "opponent " +
-                                  (g.players[g.turn]?.id === p.id &&
-                                  g.status === "active"
-                                    ? "playing"
-                                    : "")
-                                }
-                              >
-                                <div className="opponent-profile">
-                                  <Avatar {...p} index={i + 1} flag />
-                                  <div>
-                                    <strong>
-                                      {p.name}{" "}
-                                      {p.bot && (
-                                        <span className="bot-label">BOT</span>
-                                      )}
-                                    </strong>
-                                    <small>{p.country}</small>
-                                  </div>
-                                  <span className="opponent-count">
-                                    {p.stockCount}
-                                    <small>left</small>
-                                  </span>
-                                </div>
-                                <div className="opponent-cards">
-                                  <div className="mini-hand">
-                                    {Array.from(
-                                      { length: Math.min(p.handCount, 5) },
-                                      (_, i) => (
-                                        <span key={i} />
-                                      ),
-                                    )}
-                                  </div>
-                                  <Card value={p.top} small disabled />
-                                  <span className="opponent-stock-label">
-                                    STOCK
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="building-area">
-                            <div className="building-label">
-                              <span /> SHARED BUILDING PILES <span />
-                            </div>
-                            <div className="building-piles">
-                              {g.builds.map((pile, i) => (
-                                <div key={i} className="build-wrap">
-                                  <button
-                                    className={
-                                      "build-target " +
-                                      (selected && myTurn ? "available" : "")
-                                    }
-                                    aria-label={`Play to building pile ${i + 1}, needs ${pile.length + 1}`}
-                                    onClick={() => play(i)}
-                                    disabled={!myTurn || busy}
-                                  >
-                                    {pile.length ? (
-                                      <span className="build-card">
-                                        <span className="build-card-number">
-                                          {pile.length}
-                                          <small>♦</small>
-                                        </span>
-                                        <span
-                                          className={
-                                            pile.length % 2 === 0
-                                              ? "red-text"
-                                              : ""
-                                          }
-                                        >
-                                          {pile.length % 2 === 0 ? (
-                                            "♦"
-                                          ) : (
-                                            <Spade
-                                              size={28}
-                                              fill="currentColor"
-                                            />
-                                          )}
-                                        </span>
-                                        <span className="build-card-number rotated">
-                                          {pile.length}
-                                          <small>♦</small>
-                                        </span>
-                                      </span>
-                                    ) : (
-                                      <span className="empty-build">
-                                        <span>1</span>
-                                        <Spade size={25} />
-                                        <small>START HERE</small>
-                                      </span>
-                                    )}
-                                  </button>
-                                  <span className="pile-caption">
-                                    {pile.length
-                                      ? `Next: ${pile.length + 1}`
-                                      : "Start with 1"}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                            <span className="build-hint">
-                              Build from 1 to 12. Wild cards go anywhere.
-                            </span>
-                          </div>
-                          <div className="draw-pile">
-                            <Card back disabled small />
-                            <span>
-                              {g.deckCount}
-                              <small>DRAW PILE</small>
-                            </span>
-                          </div>
-                          <div className="table-side-note">
-                            <ShieldCheck size={16} />
-                            Private family table
-                          </div>
-                          <div className="your-seat">
-                            <Avatar
-                              name={user?.name}
-                              flag
-                              country={user?.country}
-                              size="large"
-                            />
-                            <span>
-                              {user?.name} <small>YOU</small>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className={
-                          "turn-banner " + (!myTurn ? "waiting-turn" : "")
-                        }
-                      >
-                        <span className="turn-dot" />
-                        <strong>
-                          {g.status === "completed"
-                            ? `${g.players.find((p) => p.id === g.winner)?.name} wins! 🎉`
-                            : myTurn
-                              ? "Your move, " + user?.name + "!"
-                              : `${g.players[g.turn]?.name}’s turn`}
-                        </strong>
-                        <span>
-                          {g.status === "completed"
-                            ? "A good game deserves a rematch."
-                            : myTurn
-                              ? "Select a card, then choose a building pile."
-                              : "This game is saved. Come back whenever you’re ready."}
-                        </span>
-                        <span className="turn-number">
-                          {g.status === "completed"
-                            ? "FINISHED"
-                            : `TURN ${Math.floor(g.moves / g.players.length) + 1}`}
-                        </span>
-                      </div>
-                      <div className="player-zone">
-                        <div className="stock-zone">
-                          <div className="zone-label">
-                            YOUR STOCK <span>{me?.stockCount}</span>
-                          </div>
-                          <div className="stock-stack">
-                            <Card
-                              value={me?.top}
-                              disabled={!myTurn || busy}
-                              selected={selected?.source === "stock"}
-                              onClick={() =>
-                                setSelected({ source: "stock", index: 0 })
-                              }
-                            />
-                          </div>
-                          <span className="zone-help">Empty this to win</span>
-                        </div>
-                        <div className="hand-zone">
-                          <div className="zone-label">
-                            YOUR HAND <span>{me?.handCount} CARDS</span>
-                          </div>
-                          <div className="hand-cards">
-                            {me?.hand?.map((v, i) => (
-                              <Card
-                                key={i}
-                                value={v}
-                                selected={
-                                  selected?.source === "hand" &&
-                                  selected.index === i
-                                }
-                                disabled={!myTurn || busy}
-                                onClick={() =>
-                                  setSelected({ source: "hand", index: i })
-                                }
-                              />
-                            ))}
-                          </div>
-                          <span className="zone-help">
-                            {selected
-                              ? "Choose a pile to play your card"
-                              : "A good move starts with a little mischief."}
-                          </span>
-                        </div>
-                        <div className="discard-zone">
-                          <div className="zone-label">YOUR DISCARD PILES</div>
-                          <div className="discard-cards">
-                            {me?.discards?.map((pile, i) => (
-                              <div key={i}>
-                                <Card
-                                  small
-                                  empty={!pile.length}
-                                  value={pile.at(-1)}
-                                  disabled={!myTurn || busy}
-                                  selected={
-                                    selected?.source === "discard" &&
-                                    selected.index === i
-                                  }
-                                  label={`Discard pile ${i + 1}${pile.length ? ", top card " + pile.at(-1) : ", empty"}`}
-                                  onClick={() =>
-                                    selected?.source === "hand"
-                                      ? discard(i)
-                                      : pile.length
-                                        ? setSelected({
-                                            source: "discard",
-                                            index: i,
-                                          })
-                                        : setToast(
-                                            "Select a card from your hand to discard here.",
-                                          )
-                                  }
-                                />
-                                <span>{i + 1}</span>
-                              </div>
-                            ))}
-                          </div>
-                          <span className="zone-help">
-                            Discard a hand card to end your turn
-                          </span>
-                        </div>
-                      </div>
-                      <div className="game-footer">
-                        <span>
-                          <ShieldCheck size={14} /> Every move is saved
-                          automatically
-                        </span>
-                        {g.status === "completed" ? (
-                          <button
-                            onClick={() => newRoom(!!room.practice, room.title)}
-                          >
-                            Play again <ArrowRight size={15} />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              if (!myTurn) {
-                                setToast("Wait for your turn.");
-                                return;
-                              }
-                              if (!me.handCount) {
-                                task(async () => {
-                                  setRoom(
-                                    await api("/rooms/" + room.id + "/move", {
-                                      type: "pass",
-                                      index: 0,
-                                      version: room.version,
-                                    }),
-                                  );
-                                  await refresh();
-                                });
-                              } else if (selected?.source === "hand")
-                                setToast(
-                                  "Click one of your four discard piles to end your turn.",
-                                );
-                              else
-                                setToast(
-                                  "Select a card from your hand, then place it on a discard pile.",
-                                );
-                            }}
-                          >
-                            End turn <ArrowRight size={15} />
-                          </button>
-                        )}
-                      </div>
-                    </>
+                    <GameTable
+                      game={g}
+                      room={room}
+                      user={user}
+                      selected={selected}
+                      onSelect={setSelected}
+                      onNewGame={() => setModal({ type: "create" })}
+                      onPlay={play}
+                      onDiscard={discard}
+                      busy={busy}
+                      sound={sound}
+                      onSound={() => setSound(!sound)}
+                      onRules={() => setModal({ type: "rules" })}
+                      onOptions={() => setModal({ type: "tableOptions" })}
+                      onToast={setToast}
+                      onRematch={() => newRoom(!!room.practice, room.title)}
+                      onPass={() =>
+                        task(async () => {
+                          setRoom(
+                            await api("/rooms/" + room.id + "/move", {
+                              type: "pass",
+                              index: 0,
+                              version: room.version,
+                            }),
+                          );
+                          setSelected(null);
+                          await refresh();
+                        })
+                      }
+                    />
                   ) : (
                     <div className="empty-state">
                       <Spade />
@@ -1827,8 +1515,9 @@ function ModalContent({
         </p>
         <ol className="rules">
           <li>
-            <strong>Build together.</strong> The four shared piles go from 1 to
-            12, in order. Start any empty pile with a 1.
+            <strong>Build together.</strong> Shared piles run from A through Q
+            in any suit. Only an ace starts a pile. Each ace reveals another
+            empty space; there is no four-pile limit.
           </li>
           <li>
             <strong>Play your cards.</strong> Select a card from your hand, the
@@ -1836,8 +1525,9 @@ function ModalContent({
             building pile.
           </li>
           <li>
-            <strong>Go a little wild.</strong> W cards stand in for any number.
-            Completed piles are recycled.
+            <strong>Go a little wild.</strong> Kings replace any rank from 2
+            through Q, but cannot replace the opening ace. There are no jokers
+            or separate wild cards. Completed A–Q piles are recycled.
           </li>
           <li>
             <strong>Keep going.</strong> Play as many cards as you can. Empty
