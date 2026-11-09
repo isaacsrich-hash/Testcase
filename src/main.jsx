@@ -40,6 +40,7 @@ import {
   Crown,
 } from "lucide-react";
 import "./style.css";
+import "./comic.css";
 // Preserve existing player sessions and recovery-file compatibility after rebranding.
 const tokenKey = "kindred-token";
 let auth = localStorage.getItem(tokenKey) || "";
@@ -81,7 +82,53 @@ function Avatar({
 }) {
   return (
     <span className={`avatar av${index % 4} ${size}`}>
-      {initials(name)}
+      <svg className="toon-avatar" viewBox="0 0 50 50" aria-hidden="true">
+        <path
+          d="M9 42C7 33 7 14 16 9c8-5 22-1 24 8 3 10 0 21-4 26"
+          fill="#ffdb45"
+          stroke="#273449"
+          strokeWidth="2"
+        />
+        <path
+          d={
+            index % 2
+              ? "M10 20 7 12l9 2-2-7 9 4 2-5 6 7"
+              : "M11 18c-2-11 18-15 25-5l-7-3-4 5-5-5-4 7"
+          }
+          fill="#b96934"
+          stroke="#273449"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+        <ellipse
+          cx="20"
+          cy="23"
+          rx="6"
+          ry="7"
+          fill="white"
+          stroke="#273449"
+          strokeWidth="1.5"
+        />
+        <ellipse
+          cx="31"
+          cy="23"
+          rx="6"
+          ry="7"
+          fill="white"
+          stroke="#273449"
+          strokeWidth="1.5"
+        />
+        <circle cx={index % 2 ? 22 : 19} cy="24" r="2" fill="#273449" />
+        <circle cx={index % 2 ? 33 : 30} cy="24" r="2" fill="#273449" />
+        <path
+          d="M26 26q7 4 0 5M16 34q10 12 20-1"
+          fill="none"
+          stroke="#273449"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+      <span className="avatar-initials">{initials(name)}</span>
       {flag && <span className="avatar-flag">{flags[country] || "🌍"}</span>}
     </span>
   );
@@ -359,7 +406,7 @@ function App() {
             </strong>
           </span>
         </a>
-        <div className="brand-tagline">FAMILY. CARDS. CHAOS.</div>
+        <div className="brand-tagline">SERIOUSLY SILLY CARD GAMES</div>
         <div
           className="family-switch"
           onClick={() => setPage("family")}
@@ -397,14 +444,14 @@ function App() {
             <span>+</span>
           </span>
           <h3>
-            Got a rival
+            Got a goofball
             <br />
             in the family?
           </h3>
           <p>
             Save them a seat.
             <br />
-            Then show no mercy.
+            Let the nonsense begin.
           </p>
           <button onClick={() => setModal({ type: "create" })}>
             Invite your family <ArrowUpRight size={15} />
@@ -488,14 +535,14 @@ function App() {
           >
             <div className="hero-copy">
               <div className="eyebrow">
-                <Sparkles size={12} /> FAMILY GAME NIGHT. UPGRADED.
+                <Sparkles size={12} /> THE FAMILY FEUD JUST GOT FUNNIER
               </div>
               <h1>
                 {page === "table" ? (
                   <>
-                    Play your cards.
+                    Small cards.
                     <br />
-                    <span>Stir up trouble.</span>
+                    <span>Big family drama!</span>
                   </>
                 ) : page === "family" ? (
                   "Your favorite rivals."
@@ -507,7 +554,7 @@ function App() {
               </h1>
               <p>
                 {page === "table"
-                  ? "Different countries. One table. Absolutely no mercy."
+                  ? "Big laughs. Sneaky moves. Your favorite people, all at one table."
                   : page === "family"
                     ? "Bring the whole crew. Distance doesn’t get a seat at this table."
                     : page === "leaderboard"
@@ -521,41 +568,88 @@ function App() {
                 >
                   <Plus size={17} /> New family game
                 </button>
-                <button
-                  className="hero-join"
-                  onClick={() => setModal({ type: "join" })}
-                >
-                  <Link size={15} /> Join a table <ArrowUpRight size={14} />
-                </button>
+                {page === "table" && g?.status === "active" ? (
+                  <button
+                    className="hero-join"
+                    onClick={() =>
+                      document
+                        .querySelector(".game-panel")
+                        ?.scrollIntoView({
+                          behavior: window.matchMedia(
+                            "(prefers-reduced-motion: reduce)",
+                          ).matches
+                            ? "auto"
+                            : "smooth",
+                          block: "start",
+                        })
+                    }
+                  >
+                    <Play size={15} /> Play this hand <ArrowRight size={14} />
+                  </button>
+                ) : (
+                  <button
+                    className="hero-join"
+                    onClick={() => setModal({ type: "join" })}
+                  >
+                    <Link size={15} /> Join a table <ArrowUpRight size={14} />
+                  </button>
+                )}
               </div>
             </div>
             {page === "table" && (
               <div className="hero-art" aria-hidden="true">
                 <span className="hero-orbit orbit-one" />
                 <span className="hero-orbit orbit-two" />
-                <span className="hero-spark spark-one">✦</span>
+                <span className="hero-spark spark-one">POW!</span>
                 <span className="hero-spark spark-two">✦</span>
                 <div className="hero-card hero-card-one">
                   <span>
                     7<small>♦</small>
                   </span>
                   <b>♦</b>
+                  <div className="toon-face">
+                    <span />
+                    <span />
+                    <i />
+                  </div>
+                  <div className="toon-feet">
+                    <i />
+                    <i />
+                  </div>
                 </div>
                 <div className="hero-card hero-card-two">
                   <span>
                     W<small>✦</small>
                   </span>
                   <Sparkles size={45} />
-                  <em>WILD SIDE</em>
+                  <div className="toon-face">
+                    <span />
+                    <span />
+                    <i />
+                  </div>
+                  <div className="toon-feet">
+                    <i />
+                    <i />
+                  </div>
+                  <em>THE WILD ONE</em>
                 </div>
                 <div className="hero-card hero-card-three">
                   <span>
                     1<small>♠</small>
                   </span>
                   <Spade size={46} fill="currentColor" />
+                  <div className="toon-face">
+                    <span />
+                    <span />
+                    <i />
+                  </div>
+                  <div className="toon-feet">
+                    <i />
+                    <i />
+                  </div>
                 </div>
                 <span className="hero-art-tag">
-                  <Flame size={13} /> BRING YOUR GAME FACE
+                  <Flame size={13} /> DEAL WITH IT!
                 </span>
               </div>
             )}
@@ -1065,7 +1159,7 @@ function App() {
                     <strong>
                       Good cards.
                       <br />
-                      Great trash talk.
+                      Questionable banter.
                     </strong>
                     <p>
                       {room?.practice

@@ -1,6 +1,6 @@
 # Spite n Malice
 
-A family-focused Spite & Malice game, built with React, Vite, Express, and SQLite. Original visual design; no Monopoly branding or assets.
+A family-focused Spite & Malice game, built with React, Vite, Express, and SQLite. Original bright cartoon design with illustrated card characters, comic lettering, and a responsive clubhouse layout. Fonts are served locally with their licenses in `public/fonts/`.
 
 ## Run
 

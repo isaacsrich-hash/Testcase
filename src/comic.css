@@ -1,0 +1,2503 @@
+/* Bright cartoon clubhouse. The shared stylesheet supplies game mechanics and
+   responsive card geometry; this theme replaces the frame, layout and artwork. */
+:root {
+  font-family: "Nunito", Arial, sans-serif;
+  color: #273449;
+  background: #ecf7ff;
+  --bg: #ecf7ff;
+  --panel: #fffdf7;
+  --panel-light: #fff3c9;
+  --muted: #65758a;
+  --border: #273449;
+  --pink: #ed765c;
+  --violet: #477ab2;
+  --gold: #f9c93d;
+  --ink: #273449;
+}
+body {
+  background:
+    radial-gradient(circle at 10% 35%, #d7effb 0, transparent 34%), #ecf7ff;
+  color: var(--ink);
+}
+h1,
+h2,
+h3,
+.brand,
+.mobile-wordmark {
+  font-family: "Lilita One", "Arial Rounded MT Bold", sans-serif;
+  font-weight: 400;
+}
+button {
+  font-weight: 700;
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px dashed #e46b45;
+  outline-offset: 5px;
+}
+input:focus,
+select:focus {
+  outline-color: #468cc5;
+}
+.sidebar {
+  position: fixed;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 85px;
+  padding: 12px max(24px, calc((100vw - 1370px) / 2));
+  background: #ffdd54;
+  border: 0;
+  border-bottom: 3px solid var(--ink);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 25px;
+  box-shadow: 0 4px 0 #27344912;
+  z-index: 30;
+}
+.brand {
+  gap: 10px;
+  flex-shrink: 0;
+}
+.brand-icon {
+  background: #fffdf5;
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: #e97459;
+  width: 39px;
+  height: 47px;
+  transform: rotate(-9deg);
+}
+.brand-name {
+  font-size: 24px;
+  letter-spacing: 0.1px;
+  line-height: 0.95;
+  font-weight: 400;
+  color: var(--ink);
+  text-shadow: 1px 2px #fff7bf;
+}
+.brand-name strong {
+  display: block;
+  font-weight: 400;
+}
+.brand-name > i {
+  color: #e56f50;
+  font-size: 18px;
+}
+.brand-name strong > span {
+  color: #e36a4b;
+}
+.brand-tagline,
+.family-switch,
+.nav-label,
+.sidebar-invite,
+.sidebar-bottom {
+  display: none;
+}
+.sidebar nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.nav-item {
+  width: auto;
+  white-space: nowrap;
+  padding: 11px 17px;
+  border: 2px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #6a592f;
+  font-size: 12px;
+  margin: 0;
+  gap: 8px;
+  font-weight: 800;
+}
+.nav-item:hover {
+  background: #ffe990;
+  color: var(--ink);
+}
+.nav-item.active {
+  background: #fffdf5;
+  color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: rotate(-1deg);
+}
+.nav-dot {
+  display: none;
+}
+.workspace {
+  margin: 0;
+  padding-top: 85px;
+  width: 100%;
+}
+.topbar {
+  height: 51px;
+  border-bottom: 1px solid #bccfd9;
+  background: #f8fcff;
+  padding: 0 max(25px, calc((100vw - 1370px) / 2));
+  color: var(--ink);
+}
+.breadcrumb {
+  color: #657a8a;
+  font-size: 10px;
+}
+.breadcrumb > svg {
+  color: #d17a42;
+}
+.breadcrumb > span {
+  color: #b3c0c9;
+}
+.breadcrumb strong {
+  color: #445c70;
+}
+.top-actions {
+  gap: 15px;
+}
+.level-badge {
+  background: #fff1b8;
+  border: 1.5px solid #d1a73c;
+  color: #85601f;
+  border-radius: 8px;
+  font-size: 9px;
+  padding: 5px 9px;
+}
+.level-badge > span {
+  color: #8a7140;
+  border-color: #dfc46d;
+}
+.connection {
+  color: #58766a;
+}
+.connection i {
+  background: #419b65;
+  box-shadow: none;
+}
+.connection.offline {
+  color: #a46d40;
+}
+.connection.offline i {
+  background: #c18c48;
+}
+.top-divider {
+  background: #cbd8df;
+}
+.icon-button {
+  color: #658095;
+}
+.icon-button:hover {
+  background: #dceef8;
+}
+.notification > b {
+  background: #ed7853;
+}
+.profile-button {
+  background: transparent;
+}
+main {
+  max-width: 1370px;
+  padding: 25px 25px 0;
+}
+.page-heading {
+  min-height: 145px;
+  margin-bottom: 21px;
+}
+.arena-hero {
+  min-height: 235px;
+  padding: 25px 32px;
+  background: #aee4fb;
+  border: 2.5px solid var(--ink);
+  border-radius: 19px;
+  box-shadow: 5px 5px 0 #273449;
+  overflow: hidden;
+}
+.arena-hero:before {
+  content: "";
+  position: absolute;
+  right: 20px;
+  top: 27px;
+  width: 80px;
+  height: 25px;
+  background: #ffffffa8;
+  border-radius: 40px;
+  box-shadow:
+    -75px 93px 0 4px #ffffff78,
+    -230px 4px 0 -4px #ffffff78,
+    -380px 132px 0 1px #ffffff70;
+}
+.arena-hero:after {
+  background: none;
+  mask-image: none;
+  opacity: 1;
+  inset: auto -5px -35px -5px;
+  height: 60px;
+  background: #7ec8e3;
+  border-radius: 50% 50% 0 0;
+  transform: rotate(-1deg);
+}
+.eyebrow {
+  font-family: "Nunito", sans-serif;
+  color: #32749b;
+  font-weight: 900;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+}
+.eyebrow > span {
+  background: #eb7d55;
+}
+.hero-copy {
+  max-width: 72%;
+}
+.arena-hero h1 {
+  font-size: 43px;
+  color: var(--ink);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: 0.1px;
+}
+.arena-hero h1 > span {
+  color: #de6b40;
+  text-shadow: 2px 2px #fff3cd;
+  -webkit-text-stroke: 0.4px #924b36;
+}
+.page-heading p {
+  color: #456c80;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.7;
+  max-width: 500px;
+}
+.hero-actions {
+  margin-top: 19px;
+  gap: 19px;
+}
+.primary,
+.secondary {
+  font-family: "Nunito", sans-serif;
+  font-weight: 900;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  font-size: 12px;
+  border-radius: 9px;
+  padding: 11px 16px;
+  transition:
+    transform 0.16s,
+    box-shadow 0.16s;
+}
+.primary {
+  background: #ff9d71;
+  color: #283649;
+}
+.primary:hover:not(:disabled) {
+  background: #ffb084;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.primary:active:not(:disabled),
+.secondary:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.secondary {
+  color: var(--ink);
+  background: #fff4cc;
+}
+.secondary:hover {
+  background: #fff0af;
+}
+.hero-join {
+  color: #315f7d;
+  font-size: 11px;
+  font-weight: 800;
+}
+.hero-art {
+  width: 300px;
+  height: 200px;
+  right: 56px;
+  top: 49%;
+  transform: translateY(-50%);
+}
+.hero-orbit {
+  display: none;
+}
+.hero-card {
+  width: 83px;
+  height: 118px;
+  border: 2.5px solid var(--ink);
+  border-radius: 9px;
+  background: #fffcf4;
+  box-shadow: 4px 4px 0 #273449;
+  overflow: visible;
+}
+.hero-card > span {
+  font-size: 20px;
+  color: #e06b4b;
+}
+.hero-card-one {
+  left: 19px;
+  top: 43px;
+  transform: rotate(-18deg);
+}
+.hero-card-two {
+  left: 105px;
+  top: 10px;
+  transform: rotate(7deg);
+  background: #ffdc53;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.hero-card-three {
+  left: 184px;
+  top: 49px;
+  transform: rotate(19deg);
+  color: #4a86b8;
+}
+.hero-card > svg,
+.hero-card > b {
+  display: none;
+}
+.hero-card-three > span {
+  color: #5183ae;
+}
+.hero-card-two > em {
+  font-size: 6px;
+  bottom: 9px;
+  letter-spacing: 1px;
+  color: #74551d;
+  font-weight: 900;
+}
+.hero-card:before,
+.hero-card:after {
+  content: "";
+  position: absolute;
+  top: 72px;
+  width: 27px;
+  height: 25px;
+  border-top: 3px solid var(--ink);
+  border-left: 3px solid var(--ink);
+  border-radius: 14px 0 0 0;
+  transform: rotate(-28deg);
+  left: -27px;
+}
+.hero-card:after {
+  left: auto;
+  right: -27px;
+  transform: scaleX(-1) rotate(-28deg);
+}
+.toon-face {
+  width: 53px;
+  position: relative;
+  height: 45px;
+  top: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+}
+.toon-face > span {
+  display: block;
+  background: white;
+  width: 23px;
+  height: 27px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  position: relative;
+}
+.toon-face > span:after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 5px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.toon-face > i {
+  position: absolute;
+  bottom: 0;
+  left: 13px;
+  width: 27px;
+  height: 13px;
+  border-bottom: 3px solid var(--ink);
+  border-radius: 0 0 50% 50%;
+  transform: rotate(-7deg);
+}
+.hero-card-two .toon-face > span:last-of-type {
+  height: 4px;
+  margin-top: 13px;
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  border-top: 3px solid var(--ink);
+  transform: rotate(-7deg);
+}
+.hero-card-two .toon-face > span:last-of-type:after {
+  display: none;
+}
+.hero-card-three .toon-face > i {
+  transform: rotate(10deg);
+  width: 17px;
+  left: 17px;
+}
+.toon-feet {
+  position: absolute;
+  bottom: -23px;
+  display: flex;
+  width: 50px;
+  justify-content: space-between;
+}
+.toon-feet > i {
+  width: 4px;
+  height: 23px;
+  background: var(--ink);
+  position: relative;
+}
+.toon-feet > i:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -7px;
+  width: 15px;
+  height: 7px;
+  background: var(--ink);
+  border-radius: 8px 3px 0 0;
+}
+.hero-art-tag {
+  bottom: -8px;
+  left: 72px;
+  padding: 7px 15px;
+  background: #fffdf4;
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  font-family: "Lilita One", sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: rotate(-4deg);
+}
+.hero-art-tag svg {
+  display: none;
+}
+.hero-spark {
+  color: var(--ink);
+}
+.spark-one {
+  top: 4px;
+  right: -13px;
+  transform: rotate(11deg);
+  font-family: "Lilita One", sans-serif;
+  font-size: 15px;
+  padding: 7px 10px;
+  background: #ffd954;
+  border: 2px solid var(--ink);
+  clip-path: polygon(
+    0 15%,
+    35% 19%,
+    51% 0,
+    66% 19%,
+    100% 7%,
+    90% 50%,
+    100% 85%,
+    65% 81%,
+    50% 100%,
+    34% 80%,
+    0 95%,
+    10% 50%
+  );
+}
+.spark-two {
+  color: #de6b40;
+  left: -3px;
+  bottom: 15px;
+}
+.stats-row {
+  gap: 15px;
+  margin-bottom: 24px;
+  margin-top: 26px;
+  grid-template-columns: 1fr 1fr 1.5fr;
+}
+.stat {
+  background: #fffdf7;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 #b8d2e1;
+  border-radius: 11px;
+  min-height: 72px;
+  padding: 12px 18px;
+  gap: 12px;
+}
+.stat:nth-child(2) {
+  background: #fff3d8;
+}
+.quest-stat {
+  background: #e4f4df;
+}
+.stat-icon {
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  transform: rotate(-5deg);
+  height: 39px;
+  width: 38px;
+}
+.stat-icon.green {
+  color: #755816;
+  background: #ffe081;
+}
+.stat-icon.orange {
+  color: #a05e37;
+  background: #ffc098;
+}
+.stat-icon.purple {
+  color: #40824c;
+  background: #bde5b1;
+}
+.stat small {
+  color: #748391;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+}
+.stat strong {
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 21px;
+}
+.stat strong > span {
+  color: #758291;
+  font-size: 10px;
+}
+.stat-decoration {
+  color: #aaa16f;
+}
+.quest-stat strong {
+  font-size: 11px;
+}
+.quest-stat strong > span {
+  color: #4e874a;
+}
+.quest-stat > svg {
+  color: #5f9759;
+}
+.quest-track {
+  height: 5px;
+  background: #c7dfc0;
+  border: 1px solid #97bb8b;
+}
+.quest-track > i {
+  background: #71b35d;
+}
+.game-layout {
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 24px;
+}
+.game-panel {
+  border: 2.5px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 5px 5px 0 #aecbdb;
+  background: #fffcf3;
+}
+.game-panel-head {
+  background: #fff3c3;
+  border-bottom: 2px solid var(--ink);
+  padding: 15px 19px;
+}
+.table-icon {
+  background: #ffdc59;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  color: #d56c43;
+  transform: rotate(-6deg);
+}
+.game-title h2 {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 400;
+}
+.game-title div > span {
+  color: #8a7b51;
+  font-size: 10px;
+}
+.table-tools .icon-button {
+  color: #977b43;
+}
+.table-tools .icon-button:hover {
+  background: #ffe9a3;
+}
+.live-tag {
+  background: #e4f3d3;
+  color: #4e7042;
+  border: 1.5px solid #8eae6b;
+  border-radius: 6px;
+  font-weight: 900;
+  box-shadow: none;
+}
+.live-tag i {
+  background: #6d9a4e;
+  box-shadow: none;
+}
+.felt-surround {
+  background: #d5eff7;
+  padding: 24px 18px 33px;
+}
+.felt-table {
+  background: #a7dcb3;
+  border: 7px solid #ffd860;
+  outline: 2.5px solid var(--ink);
+  box-shadow:
+    0 0 0 5px #e4ad3f,
+    0 5px 0 4px #273449,
+    inset 0 0 0 2px var(--ink);
+  border-radius: 130px;
+  color: var(--ink);
+  height: 365px;
+}
+.felt-table:before {
+  background-image: radial-gradient(#659c7033 1.2px, transparent 1.2px);
+  background-size: 10px 10px;
+  opacity: 0.5;
+  border-radius: 120px;
+}
+.felt-outline {
+  border: 1.5px dashed #6cad7980;
+  box-shadow: none;
+}
+.table-watermark {
+  color: #54875a;
+  opacity: 0.32;
+  top: 27px;
+}
+.table-watermark > span {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+}
+.table-watermark i {
+  color: #c38036;
+}
+.table-watermark small {
+  font-weight: 900;
+  font-size: 5px;
+}
+.opponent-profile strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+.opponent-profile small {
+  color: #55725b;
+  font-weight: 700;
+}
+.opponent-count {
+  color: #546e3c;
+  background: #e8f7d2;
+  border: 1.5px solid #729f63;
+  border-radius: 8px;
+  min-width: 31px;
+  padding: 4px 6px;
+  font-size: 17px;
+  line-height: 1;
+}
+.opponent-count small {
+  color: #6f8c54;
+  font-size: 6px;
+}
+.bot-label {
+  color: #6c7a4e;
+  background: #ecf4d6;
+  border-color: #a2b586;
+}
+.mini-hand span {
+  background: repeating-linear-gradient(
+    45deg,
+    #d77657 0,
+    #d77657 2px,
+    #ffc278 2px,
+    #ffc278 5px
+  );
+  border: 1.5px solid var(--ink);
+  box-shadow: 1px 2px 0 var(--ink);
+}
+.opponent-stock-label {
+  color: #5a795c;
+  font-weight: 900;
+}
+.avatar {
+  width: 41px;
+  height: 41px;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 #273449;
+  background: #97cce7;
+  overflow: visible;
+}
+.av1 {
+  background: #efb0b5;
+  border-color: var(--ink);
+}
+.av2 {
+  background: #b4bbeb;
+  border-color: var(--ink);
+}
+.av3 {
+  background: #a8d3ae;
+  border-color: var(--ink);
+}
+.toon-avatar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.avatar-initials {
+  position: absolute;
+  bottom: -4px;
+  left: -5px;
+  font-size: 6px;
+  background: #fff9db;
+  border: 1px solid var(--ink);
+  padding: 1px 3px;
+  line-height: 1.1;
+  border-radius: 3px;
+  color: var(--ink);
+  font-weight: 900;
+  z-index: 1;
+}
+.avatar-flag {
+  background: white;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  right: -6px;
+  bottom: -6px;
+  font-size: 11px;
+  line-height: 13px;
+  z-index: 2;
+}
+.avatar.large {
+  width: 55px;
+  height: 55px;
+}
+.avatar.tiny {
+  width: 31px;
+  height: 31px;
+}
+.avatar.tiny .avatar-initials {
+  font-size: 5px;
+  padding: 1px 2px;
+  left: -3px;
+}
+.opponent .avatar {
+  border-color: var(--ink);
+}
+.opponent.playing .avatar {
+  box-shadow:
+    0 0 0 4px #fff398,
+    3px 3px 0 4px var(--ink);
+}
+.your-seat .avatar {
+  border: 2.5px solid var(--ink);
+  box-shadow:
+    0 0 0 4px #fff6ad,
+    0 0 0 6px var(--ink);
+}
+.your-seat > span:last-child {
+  font-family: "Nunito", sans-serif;
+  font-weight: 900;
+  color: var(--ink);
+}
+.your-seat small {
+  background: #ffe786;
+  color: #866223;
+  border: 1px solid #d7ae50;
+}
+.building-label {
+  color: #477c59;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+.building-label > span {
+  background: #699d7655;
+}
+.build-target {
+  background: #d6f0cd80;
+  border: 2px dashed #619b68;
+  color: #538957;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.build-target.available {
+  background: #fff5c5;
+  border: 2px solid #d49535;
+  box-shadow: 3px 3px 0 #456f4780;
+}
+.build-target.available:hover {
+  background: #fff3a6;
+  box-shadow: 4px 6px 0 #456f4780;
+}
+.empty-build {
+  color: #70a67a;
+}
+.empty-build > span {
+  color: #4c7d57;
+  font-family: "Lilita One", sans-serif;
+  font-size: 22px;
+}
+.empty-build > small {
+  color: #629269;
+  font-weight: 900;
+}
+.empty-build > svg {
+  opacity: 0.65;
+}
+.pile-caption {
+  color: #548660;
+  font-weight: 800;
+  font-size: 8px;
+}
+.build-hint {
+  color: #638c66;
+  font-weight: 700;
+  font-size: 8px;
+}
+.build-card {
+  background: #fffdf1;
+  border: 2px solid var(--ink);
+  box-shadow:
+    0 3px 0 #bcb8a1,
+    0 5px 0 var(--ink);
+  color: #3c6784;
+}
+.build-card-number {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+}
+.red-text {
+  color: #d96c48;
+}
+.draw-pile > span {
+  color: #426f53;
+}
+.draw-pile small,
+.table-side-note {
+  color: #5d8c69;
+  font-weight: 800;
+}
+.card {
+  background: #fffdf2;
+  border: 1.8px solid var(--ink);
+  border-radius: 6px;
+  color: #467b9d;
+  box-shadow: 2px 3px 0 #273449;
+  font-weight: 400;
+}
+.card.red {
+  color: #e36c4e;
+}
+.card.wild {
+  background: #ffe061;
+  color: #b37b21;
+  border-color: var(--ink);
+}
+.card-corner {
+  font-family: "Lilita One", "Arial Rounded MT Bold", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+}
+.card-corner > span {
+  font-family: Georgia;
+}
+.card:not(:disabled):hover {
+  box-shadow: 3px 7px 0 #273449;
+  transform: translateY(-4px);
+}
+.card.selected {
+  outline: 3px solid #e7a036;
+  outline-offset: 2px;
+  box-shadow: 2px 7px 0 #273449;
+  transform: translateY(-8px);
+}
+.card-empty {
+  background: #fff2c65e;
+  color: #b3ae79;
+  border: 1.5px dashed #a8a777;
+  box-shadow: none;
+}
+.card-back {
+  background: repeating-linear-gradient(
+    45deg,
+    #da7456 0,
+    #da7456 2px,
+    #ffc78d 2px,
+    #ffc78d 5px
+  );
+  border: 2px solid var(--ink);
+  outline: none;
+}
+.back-medallion {
+  background: #ffe7a3;
+  color: #b26d37;
+  border: 1.5px solid var(--ink);
+}
+.stock-stack:before,
+.stock-stack:after {
+  background: #fff3c7;
+  border: 1.5px solid var(--ink);
+}
+.stock-stack:after {
+  background: #f6e7bd;
+}
+.card-corner.bottom {
+  font-weight: 400;
+}
+.turn-banner {
+  background: #fff0ad;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1.5px solid #d7bd67;
+  color: var(--ink);
+  padding: 14px 19px;
+}
+.turn-dot {
+  background: #c88830;
+  box-shadow: 0 0 0 4px #e8bc4e44;
+}
+.turn-banner strong {
+  font-size: 12px;
+  color: #8a6322;
+  font-weight: 900;
+}
+.turn-banner > span:nth-last-child(2) {
+  color: #a2894a;
+  font-size: 10px;
+}
+.turn-number {
+  color: #9d8244;
+  font-weight: 900;
+}
+.waiting-turn {
+  background: #e8f2ff;
+}
+.waiting-turn strong {
+  color: #597d9e;
+}
+.player-zone {
+  background: #fffbee;
+  padding: 23px 21px 19px;
+}
+.zone-label {
+  color: #7b8a92;
+  font-size: 8px;
+  font-weight: 900;
+}
+.zone-label > span {
+  background: #f1e8c5;
+  color: #938752;
+}
+.zone-help {
+  color: #9a947b;
+  font-size: 7px;
+  font-weight: 700;
+}
+.stock-zone .zone-help {
+  color: #ab8745;
+}
+.discard-cards > div > span {
+  color: #aaa27e;
+}
+.game-footer {
+  background: #fffdf6;
+  border-top: 1px solid #e0d9bb;
+  padding: 12px 20px;
+}
+.game-footer > span {
+  color: #829277;
+  font-size: 9px;
+  font-weight: 700;
+}
+.game-footer > span > svg {
+  color: #6d9d67;
+}
+.game-footer button {
+  background: #bce3ed;
+  color: #38667a;
+  border: 1.5px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  font-size: 11px;
+  font-weight: 900;
+}
+.game-footer button:hover {
+  background: #c9eff6;
+}
+.below-table p {
+  color: #8b9daa;
+  font-weight: 700;
+}
+.below-table strong {
+  color: #5d7c91;
+  font-weight: 900;
+}
+.little-sparkle {
+  color: #e9a534;
+}
+.below-table button {
+  color: #5a819b;
+  font-weight: 800;
+  font-size: 10px;
+}
+.chat-panel,
+.leader-panel {
+  background: #fffdf6;
+  border: 2px solid var(--ink);
+  border-radius: 15px;
+  box-shadow: 4px 4px 0 #b1cfdd;
+}
+.section-head {
+  background: #e9f4fe;
+  border-bottom: 1.5px solid #aec8d8;
+  padding: 16px;
+}
+.section-head h2 {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--ink);
+}
+.section-head h2 svg {
+  color: #5a97be;
+}
+.soft-tag {
+  background: #fff4c4;
+  color: #9b7c36;
+  border: 1px solid #d6ba69;
+  font-size: 7px;
+  font-weight: 900;
+  border-radius: 5px;
+}
+.chat-welcome {
+  background: radial-gradient(ellipse at 50% 50%, #fff5cc, transparent 70%);
+  padding: 24px 19px 19px;
+}
+.chat-welcome > span {
+  font-size: 26px;
+}
+.chat-welcome strong {
+  font-family: "Lilita One", sans-serif;
+  color: #547b9a;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+.chat-welcome p {
+  color: #96a5ac;
+  font-size: 11px;
+  font-weight: 600;
+}
+.chat-messages {
+  scrollbar-color: #a9cbd8 transparent;
+}
+.system-message {
+  border: 1px dashed #d0cda5;
+  background: #fffaf0;
+  color: #a39e7d;
+  font-size: 10px;
+}
+.system-message svg {
+  color: #8fab79;
+}
+.message-meta strong {
+  color: #587c94;
+  font-size: 11px;
+}
+.message-meta time {
+  color: #a5adb0;
+  font-size: 8px;
+}
+.chat-message p {
+  background: #ebf5fb;
+  color: #668a9e;
+  border: 1px solid #c7e1ed;
+  border-radius: 0 9px 9px;
+  font-size: 11px;
+}
+.chat-message.mine p {
+  background: #fff4d1;
+  color: #9e8543;
+  border-color: #e6d9a4;
+}
+.quick-reactions button {
+  background: #fffdf5;
+  color: #8d9a9a;
+  border: 1px solid #d1dbd6;
+  font-weight: 800;
+}
+.quick-reactions button:hover {
+  background: #fff2bb;
+}
+.chat-input {
+  background: #f7fbfc;
+  border: 1.5px solid #afc9d3;
+  border-radius: 8px;
+}
+.chat-input input {
+  color: #53798d;
+  font-family: "Nunito", sans-serif;
+  font-size: 11px;
+}
+.chat-input input::placeholder {
+  color: #adbdc3;
+}
+.chat-input button {
+  background: #ffdc65;
+  color: #806627;
+  border: 1.5px solid #ad8b37;
+  border-radius: 5px;
+}
+.chat-note {
+  color: #9aaba9;
+  font-size: 8px;
+}
+.leader-panel .section-head {
+  background: #fff3c7;
+  padding-bottom: 13px;
+  border-bottom: 1.5px solid #e6c681;
+}
+.leader-panel .section-head h2 svg {
+  color: #c79634;
+}
+.section-head > button {
+  color: #ac975e;
+}
+.leader-sub {
+  padding-top: 12px;
+  color: #a4a38c;
+  font-weight: 700;
+  font-size: 10px;
+}
+.leader-row {
+  border-color: #e9e7d6;
+}
+.rank {
+  color: #a7b1ac;
+  font-weight: 900;
+}
+.rank-0 {
+  color: #d1a33e;
+}
+.leader-row strong {
+  color: #5b7780;
+  font-weight: 900;
+}
+.leader-row strong > small {
+  background: #e8f3d8;
+  color: #8ca069;
+}
+.leader-row > div > span {
+  color: #a4b09f;
+}
+.leader-row > b {
+  color: #bb953d;
+  font-weight: 900;
+}
+.leader-row > b > small {
+  color: #b2a66e;
+}
+.leader-invite,
+.view-all {
+  background: #fbfff5;
+  border-color: #e4eadb;
+  color: #8da17c;
+  font-weight: 800;
+}
+.timezone-note {
+  color: #94b2bf;
+}
+.timezone-note > span {
+  color: #9caeb9;
+}
+.timezone-note strong {
+  color: #809cac;
+}
+.timezone-note > span:last-child {
+  color: #e2ad79;
+}
+.site-footer {
+  border-color: #c7dce7;
+  color: #95acba;
+  font-size: 8px;
+}
+.site-footer > span:nth-child(2) {
+  color: #8da9ba;
+}
+.site-footer button {
+  color: #83a0b3;
+  font-weight: 800;
+}
+.content-panel {
+  background: #fffdf6;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 5px 5px 0 #b0cddb;
+}
+.content-heading h2 {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  color: #3b6b8b;
+}
+.content-heading p {
+  color: #8b9fa7;
+}
+.content-heading > svg {
+  color: #e0b447;
+}
+.leader-table-head {
+  background: #fff0b6;
+  color: #a58a46;
+  font-weight: 900;
+}
+.leader-table-row {
+  border-color: #e1e7df;
+  color: #72909b;
+}
+.leader-table-row strong {
+  color: #567b91;
+  font-weight: 900;
+}
+.leader-table-row strong small {
+  color: #9fb1b3;
+}
+.leader-table-row > b {
+  color: #bd9540;
+}
+.friendly-note {
+  background: #f3f8df;
+  color: #9ba376;
+  border-color: #d7e1b8;
+}
+.friendly-note svg {
+  color: #bcad52;
+}
+.history-item {
+  border-color: #e3e8dd;
+  color: #54778e;
+}
+.history-icon {
+  background: #fff0b0;
+  border: 1px solid #dbc377;
+  color: #b99b42;
+}
+.history-item small {
+  color: #a6b1b2;
+}
+.history-item .status-pill {
+  background: #e9f4df;
+  color: #90a377;
+  border-color: #ccddbb;
+}
+.history-item > svg {
+  color: #9bb2b5;
+}
+.family-card {
+  background: #fff7dc;
+  border: 2px solid #d6b96f;
+  box-shadow: 3px 3px 0 #e1d7aa;
+  color: #537d96;
+}
+.family-card h3 {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+}
+.family-card h3 small {
+  color: #a5b2b0;
+}
+.family-card p,
+.family-card > span:not(.avatar):not(.empty-avatar) {
+  color: #a1a88b;
+}
+.add-family {
+  background: #eff9f7;
+  border-color: #b4d1ca;
+}
+.empty-avatar {
+  background: #f6fbdf;
+  border: 1.5px dashed #b6c29b;
+  color: #a5b484;
+}
+.loading,
+.empty-state {
+  color: #75a0b5;
+}
+.pulse {
+  color: #e9ac48;
+}
+.lobby {
+  background: radial-gradient(ellipse at 50% 15%, #d4f1ff, transparent 75%);
+}
+.lobby-art {
+  background: #ffdd65;
+  border: 2px solid var(--ink);
+  color: #b18328;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.lobby h2 {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  color: #527e9a;
+}
+.lobby > p,
+.lobby-seats small {
+  color: #97a9ad;
+}
+.lobby-seats strong {
+  color: #708f99;
+}
+.modal-backdrop {
+  background: #69869c66;
+  backdrop-filter: blur(5px);
+}
+.modal {
+  background: #fffdf2;
+  border: 2.5px solid var(--ink);
+  color: #4e728a;
+  box-shadow:
+    7px 7px 0 var(--ink),
+    0 15px 70px #506b8a33;
+  border-radius: 18px;
+}
+.modal-close {
+  color: #89a2b0;
+}
+.modal-art {
+  background: #ffdc66;
+  border: 2px solid var(--ink);
+  color: #b18a2e;
+  border-radius: 14px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.modal h2 {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  color: #3f7090;
+  font-size: 27px;
+}
+.modal > p,
+.modal form > p {
+  color: #8ba3ae;
+  font-size: 12px;
+}
+.modal label {
+  color: #7296aa;
+  font-weight: 900;
+}
+.modal input,
+.modal select {
+  background: #f2faff;
+  color: #5e8298;
+  border: 1.5px solid #a1c1d2;
+}
+.modal-features {
+  color: #8baaac;
+  font-weight: 800;
+}
+.modal .text-button {
+  color: #8aa598;
+  font-weight: 800;
+}
+.invite-code {
+  color: #94a897;
+}
+.invite-code strong {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  color: #c49b39;
+}
+.modal .modal-footnote {
+  background: #f5f6e5;
+  color: #a4aa83;
+}
+.rules {
+  color: #8eaaa9;
+}
+.rules strong {
+  color: #608b9b;
+}
+.quest-card {
+  background: #fff7d5;
+  border: 1.5px solid #d6c46e;
+}
+.quest-card > span {
+  color: #b99943;
+}
+.quest-card strong {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  color: #6b8a95;
+}
+.quest-card small {
+  color: #aaa875;
+}
+.quest-card progress {
+  accent-color: #82b86d;
+}
+.profile-recovery {
+  background: #f2f9ec;
+  border: 1.5px solid #d4e0c5;
+}
+.profile-recovery h3 {
+  font-family: "Nunito", sans-serif;
+  font-weight: 900;
+  color: #86a276;
+}
+.profile-recovery p {
+  color: #9eaf94;
+}
+.profile-recovery .restore-label {
+  color: #96ac8d;
+}
+.error {
+  background: #fff0df;
+  border: 2px solid #ce8c5a;
+  color: #ad7347;
+  font-weight: 800;
+}
+.toast {
+  background: #fff4c9;
+  border: 2px solid var(--ink);
+  color: #8b7541;
+  box-shadow: 4px 4px 0 var(--ink);
+  font-weight: 800;
+}
+.toast > svg {
+  color: #b29639;
+}
+.toast button {
+  color: #af9b62;
+}
+@media (min-width: 1550px) {
+  .felt-table {
+    height: 390px;
+  }
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr) 310px;
+  }
+  .building-area {
+    top: 150px;
+  }
+  .hero-art {
+    right: 90px;
+  }
+}
+@media (max-width: 1250px) {
+  .sidebar {
+    width: 100%;
+    padding: 12px 24px;
+    gap: 20px;
+  }
+  .workspace {
+    width: 100%;
+    margin: 0;
+    padding-top: 85px;
+  }
+  .brand-name {
+    font-size: 23px;
+  }
+  .brand-icon {
+    width: 37px;
+    height: 45px;
+  }
+  .sidebar nav {
+    gap: 6px;
+  }
+  .nav-item {
+    font-size: 11px;
+    padding: 10px 13px;
+  }
+  .topbar {
+    padding: 0 25px;
+  }
+  main {
+    padding: 23px 25px 0;
+  }
+  .hero-art {
+    right: 30px;
+    transform: translateY(-50%) scale(0.9);
+  }
+  .arena-hero h1 {
+    font-size: 40px;
+  }
+  .hero-copy {
+    max-width: 70%;
+  }
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 20px;
+  }
+  .opponents {
+    left: 36px;
+    right: 36px;
+  }
+  .felt-table {
+    height: 357px;
+    border-radius: 110px;
+  }
+  .building-area {
+    top: 137px;
+  }
+  .build-target {
+    width: 58px;
+    height: 83px;
+  }
+  .table-watermark > span {
+    font-size: 14px;
+  }
+  .player-zone {
+    padding: 22px 16px 18px;
+  }
+  .stat strong {
+    font-size: 20px;
+  }
+  .quest-stat strong {
+    font-size: 10px;
+  }
+  .zone-label {
+    font-size: 7px;
+  }
+  .zone-help {
+    font-size: 6px;
+  }
+  .turn-banner strong {
+    font-size: 11px;
+  }
+  .turn-banner > span:nth-last-child(2) {
+    font-size: 8px;
+  }
+  .game-title h2 {
+    font-size: 13px;
+  }
+  .game-title div > span {
+    font-size: 9px;
+  }
+  .table-tools .icon-button {
+    width: 25px;
+  }
+  .chat-note {
+    font-size: 7px;
+  }
+  .chat-welcome p {
+    font-size: 10px;
+  }
+  .quick-reactions button {
+    font-size: 7px;
+  }
+  .game-footer > span {
+    font-size: 8px;
+  }
+}
+@media (max-width: 1080px) {
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .right-rail {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hero-art {
+    right: 15px;
+    transform: translateY(-50%) scale(0.85);
+  }
+  .hero-copy {
+    max-width: 72%;
+  }
+  .arena-hero h1 {
+    font-size: 37px;
+  }
+  .opponents {
+    left: 65px;
+    right: 65px;
+  }
+  .building-area {
+    top: 139px;
+  }
+  .felt-table {
+    height: 365px;
+  }
+  .build-target {
+    width: 70px;
+    height: 98px;
+  }
+  .building-piles {
+    gap: 18px;
+  }
+  .draw-pile {
+    left: 35px;
+  }
+  .table-side-note {
+    right: 28px;
+  }
+  .player-zone {
+    padding: 25px;
+  }
+  .stat strong {
+    font-size: 21px;
+  }
+  .quest-stat strong {
+    font-size: 10px;
+  }
+  .zone-label {
+    font-size: 8px;
+  }
+  .zone-help {
+    font-size: 7px;
+  }
+  .chat-welcome {
+    padding: 17px;
+  }
+  .chat-welcome strong {
+    font-size: 17px;
+  }
+  .stats-row {
+    grid-template-columns: 1fr 1fr 1.4fr;
+  }
+}
+@media (max-width: 760px) {
+  .sidebar {
+    inset: auto 0 0;
+    height: 66px;
+    padding: 0 10px;
+    background: #ffdf64;
+    border: 0;
+    border-top: 2.5px solid var(--ink);
+    box-shadow: 0 -4px 0 #27344912;
+    display: block;
+  }
+  .sidebar .brand {
+    display: none;
+  }
+  .sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 7px 0;
+    height: 100%;
+    gap: 6px;
+    margin: 0;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 8px;
+    padding: 4px;
+    color: #a28a3b;
+    white-space: normal;
+  }
+  .nav-item.active {
+    border: 1.5px solid var(--ink);
+    box-shadow: 2px 2px 0 var(--ink);
+    color: #8d7540;
+    transform: rotate(-1deg);
+    background: #fff7d6;
+  }
+  .nav-item.active svg {
+    color: #bc9140;
+  }
+  .workspace {
+    padding-top: 0;
+    margin: 0;
+    width: 100%;
+  }
+  .topbar {
+    height: 66px;
+    padding: 0 16px;
+    background: #ffdf64;
+    border-bottom: 2.5px solid var(--ink);
+  }
+  .mobile-wordmark {
+    display: flex;
+    color: var(--ink);
+    font-family: "Lilita One", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    text-shadow: 1px 1px #fff1b2;
+    gap: 4px;
+  }
+  .mobile-wordmark i {
+    color: #df7948;
+    font-family: Georgia;
+    font-size: 17px;
+  }
+  .mobile-wordmark svg {
+    color: #d27440;
+  }
+  .level-badge {
+    background: #fff3c3;
+    border: 1.5px solid #b8953d;
+    color: #a18133;
+    padding: 6px;
+    font-size: 7px;
+  }
+  .level-badge svg {
+    color: #c29a3b;
+  }
+  .profile-button .avatar {
+    width: 32px;
+    height: 32px;
+  }
+  .top-actions {
+    gap: 12px;
+  }
+  .breadcrumb {
+    display: none;
+  }
+  main {
+    padding: 15px 12px 0;
+  }
+  .arena-hero {
+    padding: 19px 18px 21px;
+    min-height: 218px;
+    border-radius: 15px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .arena-hero .hero-copy {
+    max-width: 100%;
+  }
+  .arena-hero h1 {
+    font-size: 33px;
+    line-height: 1.04;
+    letter-spacing: 0;
+  }
+  .arena-hero .eyebrow {
+    font-size: 6px;
+    letter-spacing: 1px;
+  }
+  .arena-hero p {
+    font-size: 10px;
+    max-width: 225px;
+    line-height: 1.7;
+  }
+  .hero-art {
+    right: -90px;
+    top: 51%;
+    transform: translateY(-50%) scale(0.48);
+    opacity: 0.45;
+    transform-origin: center;
+  }
+  .hero-actions {
+    gap: 14px;
+    margin-top: 17px;
+  }
+  .hero-actions .primary {
+    font-size: 10px;
+    padding: 10px 12px;
+  }
+  .hero-join {
+    font-size: 9px;
+  }
+  .hero-art-tag {
+    display: none;
+  }
+  .hero-card-one {
+    left: 15px;
+  }
+  .hero-card-two {
+    left: 100px;
+  }
+  .hero-card-three {
+    left: 175px;
+  }
+  .hero-card-three .toon-face {
+    display: flex;
+  }
+  .hero-orbit {
+    display: none;
+  }
+  .arena-hero:before {
+    right: -20px;
+    top: 30px;
+    box-shadow: -160px 90px 0 #ffffff70;
+  }
+  .arena-hero:after {
+    bottom: -45px;
+  }
+  .page-heading {
+    margin-bottom: 17px;
+  }
+  .page-heading h1 {
+    font-family: "Lilita One", sans-serif;
+    font-weight: 400;
+  }
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 22px;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .stat {
+    padding: 10px;
+    min-height: 65px;
+    border-width: 1.8px;
+    box-shadow: 2px 2px 0 #b0cddb;
+    gap: 9px;
+  }
+  .stat-icon {
+    height: 34px;
+    width: 31px;
+  }
+  .stat small {
+    font-size: 6px;
+    letter-spacing: 0.5px;
+  }
+  .stat strong {
+    font-size: 20px;
+    gap: 5px;
+  }
+  .stat strong > span {
+    font-size: 8px;
+  }
+  .quest-stat {
+    display: none;
+  }
+  .game-panel {
+    border-width: 2px;
+    border-radius: 13px;
+    box-shadow: 4px 4px 0 #b1cdda;
+  }
+  .game-panel-head {
+    padding: 13px 11px;
+  }
+  .game-title h2 {
+    font-size: 12px;
+    max-width: 175px;
+  }
+  .game-title div > span {
+    font-size: 8px;
+  }
+  .table-icon {
+    width: 27px;
+    height: 31px;
+  }
+  .table-tools .icon-button {
+    width: 22px;
+  }
+  .live-tag {
+    font-size: 5px;
+    padding: 4px;
+    letter-spacing: 0.5px;
+  }
+  .felt-surround {
+    padding: 21px 10px 30px;
+  }
+  .felt-table {
+    height: 315px;
+    border-width: 5px;
+    outline-width: 2px;
+    box-shadow:
+      0 0 0 4px #e4ad3f,
+      0 4px 0 3px #273449,
+      inset 0 0 0 1.5px var(--ink);
+    border-radius: 74px;
+  }
+  .felt-outline {
+    inset: 12px;
+    border-radius: 64px;
+  }
+  .opponents {
+    left: 21px;
+    right: 21px;
+    top: 20px;
+    gap: 14px;
+  }
+  .opponent .avatar {
+    width: 31px;
+    height: 31px;
+  }
+  .opponent-profile {
+    gap: 6px;
+  }
+  .opponent-profile strong {
+    font-size: 10px;
+  }
+  .opponent-profile small {
+    font-size: 6px;
+  }
+  .opponent-count {
+    font-size: 16px;
+    min-width: 27px;
+    padding: 4px 5px;
+  }
+  .opponent-count small {
+    font-size: 5px;
+  }
+  .bot-label {
+    font-size: 5px;
+    padding: 1px 2px;
+  }
+  .opponent-cards {
+    padding-left: 25px;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .opponent-cards .card.small {
+    width: 28px;
+    height: 40px;
+  }
+  .opponent-cards .card-corner {
+    font-size: 10px;
+  }
+  .building-area {
+    top: 121px;
+  }
+  .building-piles {
+    gap: 10px;
+  }
+  .building-label {
+    font-size: 6px;
+    letter-spacing: 0.6px;
+  }
+  .build-target {
+    width: 48px;
+    height: 70px;
+    border-width: 1.5px;
+  }
+  .empty-build > span {
+    font-size: 19px;
+  }
+  .pile-caption {
+    font-size: 6px;
+  }
+  .build-hint {
+    font-size: 6px;
+  }
+  .draw-pile {
+    left: 18px;
+    top: 224px;
+  }
+  .draw-pile .card.small {
+    width: 24px;
+    height: 36px;
+  }
+  .draw-pile > span {
+    font-size: 10px;
+  }
+  .draw-pile small {
+    font-size: 4px;
+  }
+  .table-side-note {
+    right: 17px;
+    top: 235px;
+    font-size: 4px;
+  }
+  .your-seat {
+    bottom: -29px;
+  }
+  .your-seat .avatar.large {
+    width: 46px;
+    height: 46px;
+  }
+  .your-seat > span:last-child {
+    font-size: 10px;
+  }
+  .your-seat .avatar-initials {
+    display: none;
+  }
+  .your-seat small {
+    font-size: 5px;
+  }
+  .table-watermark {
+    display: none;
+  }
+  .turn-banner {
+    padding: 12px 13px;
+    border-top-width: 1.5px;
+  }
+  .turn-banner strong {
+    font-size: 11px;
+  }
+  .turn-banner > span:nth-last-child(2) {
+    display: none;
+  }
+  .turn-number {
+    font-size: 6px;
+  }
+  .player-zone {
+    padding: 22px 15px 17px;
+    gap: 20px 12px;
+  }
+  .zone-label {
+    font-size: 6px;
+    letter-spacing: 0.6px;
+  }
+  .zone-label > span {
+    font-size: 5px;
+  }
+  .zone-help {
+    font-size: 6px;
+    line-height: 1.7;
+  }
+  .card {
+    border-width: 1.5px;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .card-corner {
+    font-size: 16px;
+  }
+  .hand-cards .card {
+    width: 37px;
+    height: 57px;
+  }
+  .hand-cards .card-corner {
+    font-size: 13px;
+  }
+  .hand-cards .card-corner > span {
+    font-size: 6px;
+  }
+  .hand-cards {
+    gap: 5px;
+  }
+  .discard-zone {
+    border-color: #d7cb8f;
+    gap: 10px;
+  }
+  .discard-zone .zone-label {
+    width: 57px;
+    font-size: 6px;
+  }
+  .discard-zone .zone-help {
+    width: 69px;
+    font-size: 6px;
+  }
+  .discard-cards {
+    gap: 6px;
+  }
+  .discard-cards .card.small {
+    width: 31px;
+    height: 44px;
+  }
+  .discard-cards > div > span {
+    font-size: 5px;
+  }
+  .game-footer {
+    padding: 11px 13px;
+  }
+  .game-footer > span {
+    font-size: 7px;
+  }
+  .game-footer button {
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+  .below-table {
+    padding: 18px 3px;
+    gap: 9px;
+  }
+  .below-table p,
+  .below-table button {
+    font-size: 8px;
+  }
+  .right-rail {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .right-rail > * {
+    width: 100%;
+  }
+  .section-head h2 {
+    font-size: 17px;
+  }
+  .chat-welcome strong {
+    font-size: 20px;
+  }
+  .chat-welcome p {
+    font-size: 11px;
+  }
+  .chat-welcome {
+    padding: 22px 20px;
+  }
+  .chat-messages {
+    height: 150px;
+  }
+  .chat-input input {
+    font-size: 13px;
+  }
+  .quick-reactions button {
+    font-size: 9px;
+    padding: 6px 7px;
+  }
+  .chat-note {
+    font-size: 8px;
+  }
+  .leader-sub {
+    font-size: 10px;
+  }
+  .leader-row strong {
+    font-size: 12px;
+  }
+  .leader-row > div > span {
+    font-size: 10px;
+  }
+  .leader-invite,
+  .view-all {
+    font-size: 11px;
+  }
+  .site-footer {
+    padding-bottom: 90px;
+    font-size: 7px;
+  }
+  .site-footer button {
+    font-size: 7px;
+  }
+  .content-panel {
+    padding: 22px 17px;
+    border-width: 2px;
+    box-shadow: 4px 4px 0 #b0cddb;
+  }
+  .content-heading h2 {
+    font-size: 23px;
+  }
+  .content-heading p {
+    font-size: 11px;
+  }
+  .leader-table-head {
+    font-size: 6px;
+  }
+  .leader-table-row strong {
+    font-size: 10px;
+  }
+  .family-card {
+    border-width: 1.5px;
+  }
+  .family-card h3 {
+    font-size: 19px;
+  }
+  .modal {
+    padding: 29px 23px;
+    border-width: 2px;
+    box-shadow:
+      5px 5px 0 var(--ink),
+      0 10px 50px #506b8a33;
+  }
+  .modal h2 {
+    font-size: 26px;
+  }
+  .modal input,
+  .modal select {
+    font-size: 16px;
+  }
+  .modal-art {
+    width: 57px;
+    height: 59px;
+  }
+  .modal label {
+    font-size: 11px;
+  }
+  .modal-features {
+    font-size: 10px;
+  }
+  .modal .modal-footnote {
+    font-size: 10px;
+  }
+  .lobby h2 {
+    font-size: 25px;
+  }
+  .lobby > p {
+    font-size: 11px;
+  }
+  .toast {
+    bottom: 83px;
+    font-size: 11px;
+    padding: 14px 16px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+}
+@media (max-width: 370px) {
+  .topbar {
+    padding: 0 12px;
+  }
+  .mobile-wordmark {
+    font-size: 18px;
+  }
+  .top-actions {
+    gap: 8px;
+  }
+  main {
+    padding: 13px 10px 0;
+  }
+  .arena-hero {
+    padding-left: 15px;
+  }
+  .arena-hero h1 {
+    font-size: 30px;
+  }
+  .arena-hero p {
+    font-size: 9px;
+    max-width: 200px;
+  }
+  .hero-actions {
+    gap: 11px;
+  }
+  .hero-actions .primary {
+    font-size: 9px;
+    padding: 10px;
+  }
+  .hero-join {
+    font-size: 8px;
+  }
+  .hero-art {
+    right: -107px;
+  }
+  .game-title h2 {
+    max-width: 135px;
+    font-size: 11px;
+  }
+  .game-title div > span {
+    font-size: 7px;
+  }
+  .table-tools .icon-button {
+    width: 18px;
+  }
+  .opponents {
+    left: 16px;
+    right: 16px;
+    gap: 10px;
+  }
+  .opponent .avatar {
+    width: 27px;
+    height: 27px;
+  }
+  .opponent-profile strong {
+    font-size: 9px;
+  }
+  .opponent-profile small {
+    font-size: 5px;
+  }
+  .opponent-count {
+    font-size: 14px;
+    min-width: 25px;
+  }
+  .opponent-cards {
+    padding-left: 13px;
+    gap: 8px;
+  }
+  .build-target {
+    width: 42px;
+    height: 63px;
+  }
+  .building-piles {
+    gap: 9px;
+  }
+  .building-label {
+    font-size: 5px;
+  }
+  .build-hint {
+    font-size: 5px;
+  }
+  .player-zone {
+    padding-left: 12px;
+    padding-right: 12px;
+    gap: 20px 9px;
+  }
+  .hand-cards {
+    gap: 4px;
+  }
+  .hand-cards .card {
+    width: 31px;
+    height: 49px;
+  }
+  .hand-cards .card-corner {
+    font-size: 11px;
+  }
+  .hand-cards .card-symbol {
+    font-size: 20px;
+  }
+  .hand-cards .card-symbol svg {
+    width: 14px;
+  }
+  .stock-zone {
+    width: 42px;
+  }
+  .discard-zone {
+    gap: 5px;
+  }
+  .discard-zone .zone-label {
+    width: 49px;
+    font-size: 5px;
+  }
+  .discard-zone .zone-help {
+    width: 55px;
+    font-size: 5px;
+  }
+  .discard-cards {
+    gap: 5px;
+  }
+  .discard-cards .card.small {
+    width: 28px;
+    height: 42px;
+  }
+  .quick-reactions button {
+    font-size: 8px;
+  }
+}
+@font-face {
+  font-family: "Lilita One";
+  src: url("/fonts/LilitaOne-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("/fonts/Nunito.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+@media (max-width: 760px) {
+  .hero-art {
+    width: 80px;
+    height: 120px;
+    top: 110px;
+    right: 12px;
+    transform: none;
+    opacity: 1;
+  }
+  .hero-card-one,
+  .hero-card-three,
+  .hero-spark {
+    display: none;
+  }
+  .hero-card-two {
+    left: 2px;
+    top: 0;
+    width: 64px;
+    height: 92px;
+    transform: rotate(10deg);
+  }
+  .hero-card-two > span {
+    font-size: 15px;
+    left: 6px;
+    top: 6px;
+  }
+  .hero-card-two > span small {
+    font-size: 8px;
+  }
+  .hero-card-two .toon-face {
+    transform: scale(0.8);
+    top: 5px;
+  }
+  .hero-card-two > em {
+    font-size: 5px;
+    bottom: 7px;
+  }
+  .hero-card-two:before {
+    width: 20px;
+    left: -20px;
+    top: 53px;
+  }
+  .hero-card-two:after {
+    width: 20px;
+    right: -20px;
+    top: 53px;
+  }
+  .hero-card-two .toon-feet {
+    bottom: -20px;
+    width: 42px;
+  }
+  .hero-card-two .toon-feet i {
+    height: 20px;
+  }
+  .arena-hero p {
+    max-width: 220px;
+  }
+}
+@media (max-width: 370px) {
+  .hero-art {
+    right: 8px;
+    top: 111px;
+    transform: scale(0.85);
+    transform-origin: top right;
+  }
+  .arena-hero p {
+    max-width: 190px;
+  }
+}
+.game-panel {
+  scroll-margin-top: 104px;
+}
+@media (min-width: 1251px) {
+  .card {
+    width: 60px;
+    height: 88px;
+  }
+  .card.small {
+    width: 43px;
+    height: 65px;
+  }
+  .hand-cards {
+    gap: 9px;
+  }
+  .build-target {
+    width: 76px;
+    height: 104px;
+  }
+  .zone-label {
+    font-size: 9px;
+  }
+  .zone-help {
+    font-size: 8px;
+  }
+  .game-title h2 {
+    font-size: 16px;
+  }
+  .building-label {
+    font-size: 8px;
+  }
+  .pile-caption {
+    font-size: 9px;
+  }
+  .build-hint {
+    font-size: 9px;
+  }
+}
+@media (max-width: 760px) {
+  .game-panel {
+    scroll-margin-top: 12px;
+  }
+  .zone-label {
+    font-size: 7px;
+  }
+  .zone-label > span {
+    font-size: 6px;
+  }
+  .zone-help {
+    font-size: 7px;
+  }
+  .building-label {
+    font-size: 7px;
+  }
+  .pile-caption {
+    font-size: 7px;
+  }
+  .build-hint {
+    font-size: 7px;
+  }
+  .opponent-profile small {
+    font-size: 7px;
+  }
+}
+@media (max-width: 370px) {
+  .zone-label {
+    font-size: 6px;
+  }
+  .zone-label > span {
+    font-size: 5px;
+  }
+  .building-label {
+    font-size: 6px;
+  }
+  .build-hint {
+    font-size: 6px;
+  }
+  .opponent-profile small {
+    font-size: 6px;
+  }
+}
