@@ -78,6 +78,63 @@ test("Netlify function routing, Postgres migration, full match scoring, chat and
   assert.equal(r.state.players.length, 2);
   r = await api("/rooms/" + r.id + "/start", {}, a.token);
   assert.equal(r.state.players[1].hand, undefined);
+  // Load an older active deal through the deployed Function route. The upgrade
+  // must commit once, preserve every card, and reject pre-upgrade hand indexes.
+  const beforeUpgrade = r.version;
+  const legacy = JSON.parse(
+    (await pg.query("SELECT state FROM kindred.rooms WHERE id=$1", [r.id]))
+      .rows[0].state,
+  );
+  const aceSource = [
+    legacy.deck,
+    legacy.recycle,
+    ...legacy.players.map((p) => p.stock),
+    ...legacy.builds,
+  ].find((pile) => pile.some((card) => card.rank === 1));
+  const aceIndex = aceSource.findIndex((card) => card.rank === 1);
+  const ace = aceSource.splice(aceIndex, 1)[0];
+  legacy.deck.push(legacy.players[0].hand[0]);
+  legacy.players[0].hand[0] = ace;
+  legacy.builds = [...legacy.builds.filter((pile) => pile.length), []];
+  legacy.rulesVersion = 2;
+  const beforeCount = legacy.builds.length;
+  await pg.query("UPDATE kindred.rooms SET state=$1 WHERE id=$2", [
+    JSON.stringify(legacy),
+    r.id,
+  ]);
+  const upgraded = (await api("/dashboard", null, a.token)).rooms.find(
+    (room) => room.id === r.id,
+  );
+  assert.equal(upgraded.version, beforeUpgrade + 1);
+  assert.equal(upgraded.state.rulesVersion, 3);
+  assert.equal(upgraded.state.builds.length, beforeCount + 1);
+  assert.equal(upgraded.state.players[0].handCount, 5);
+  assert.ok(upgraded.state.players[0].hand.every((card) => card.rank !== 1));
+  r = await api("/rooms/" + r.id, null, a.token);
+  assert.equal(r.version, upgraded.version);
+  assert.equal(r.state.builds.length, upgraded.state.builds.length);
+  await api(
+    "/rooms/" + r.id + "/move",
+    { type: "discard", index: 0, pile: 1, version: beforeUpgrade },
+    a.token,
+    409,
+  );
+  const savedUpgrade = JSON.parse(
+    (await pg.query("SELECT state FROM kindred.rooms WHERE id=$1", [r.id]))
+      .rows[0].state,
+  );
+  const savedCards = [
+    ...savedUpgrade.deck,
+    ...savedUpgrade.recycle,
+    ...savedUpgrade.builds.flat(),
+    ...savedUpgrade.players.flatMap((p) => [
+      ...p.stock,
+      ...p.hand,
+      ...p.discards.flat(),
+    ]),
+  ];
+  assert.equal(savedCards.length, 156);
+  assert.equal(new Set(savedCards.map((card) => card.id)).size, 156);
   r = await api(
     "/rooms/" + r.id + "/move",
     { type: "discard", index: 0, pile: 1, version: r.version },
@@ -121,6 +178,26 @@ test("Netlify function routing, Postgres migration, full match scoring, chat and
     winner = board.leaderboard.find((p) => p.id === r.state.winner);
   assert.equal(winner.wins, 1);
   assert.equal(winner.points, r.state.points);
+  // Completed records are historical snapshots and must never be upgraded.
+  const finalSnapshot = JSON.parse(
+    (await pg.query("SELECT state FROM kindred.rooms WHERE id=$1", [r.id]))
+      .rows[0].state,
+  );
+  finalSnapshot.rulesVersion = 2;
+  await pg.query("UPDATE kindred.rooms SET state=$1 WHERE id=$2", [
+    JSON.stringify(finalSnapshot),
+    r.id,
+  ]);
+  const history = await api("/rooms/" + r.id, null, a.token);
+  assert.equal(history.version, r.version);
+  assert.equal(history.state.rulesVersion, 2);
+  assert.equal(history.state.points, r.state.points);
+  assert.equal(
+    (await pg.query("SELECT state FROM kindred.rooms WHERE id=$1", [r.id]))
+      .rows[0].state,
+    JSON.stringify(finalSnapshot),
+  );
+
   assert.equal(
     (await api("/session", { token: a.token, restore: true })).id,
     a.id,

@@ -2,7 +2,7 @@ import express from 'express';
 import {storageProblem} from './storage-errors.js';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {resolve} from 'node:path';
-import {createGame,move,botTurn,publicGame} from './game.js';
+import {createGame,move,botTurn,publicGame,normalizeGame} from './game.js';
 class HttpError extends Error {constructor(status,message){super(message);this.status=status;}}
 const clean=(s,max=40)=>String(s||'').trim().slice(0,max);
 export function createApp(store,{serveStatic=true}={}) {
@@ -16,11 +16,29 @@ export function createApp(store,{serveStatic=true}={}) {
    return fn({req,db,user});
   });res.json(data);}catch(e){next(e);}
  };}
- async function roomView(db,r,id){return {...r,state:publicGame(JSON.parse(r.state),id),messages:(await db.all('SELECT * FROM messages WHERE room=? ORDER BY id DESC LIMIT 100',r.id)).reverse(),members:await db.all('SELECT u.id,u.name,u.country FROM members m JOIN users u ON u.id=m."user" WHERE room=?',r.id)};}
+  async function currentRoom(db, r) {
+    let g = JSON.parse(r.state);
+    if (g.status !== "active" || g.rulesVersion >= 3) return r;
+    // Persist automatic aces once under a row lock, including replacement draws.
+    // The revision bump makes pre-upgrade hand indexes safely stale.
+    r = await db.get("SELECT * FROM rooms WHERE id=? FOR UPDATE", r.id);
+    g = JSON.parse(r.state);
+    if (g.status === "active" && !(g.rulesVersion >= 3)) {
+      normalizeGame(g);
+      await db.run(
+        "UPDATE rooms SET state=?,version=version+1 WHERE id=?",
+        JSON.stringify(g),
+        r.id,
+      );
+      r = { ...r, state: JSON.stringify(g), version: r.version + 1 };
+    }
+    return r;
+  }
+ async function roomView(db,r,id){r=await currentRoom(db,r);return {...r,state:publicGame(JSON.parse(r.state),id),messages:(await db.all('SELECT * FROM messages WHERE room=? ORDER BY id DESC LIMIT 100',r.id)).reverse(),members:await db.all('SELECT u.id,u.name,u.country FROM members m JOIN users u ON u.id=m."user" WHERE room=?',r.id)};}
  async function getRoom(db,id,user,{lock=false}={}){
   const r=await db.get('SELECT * FROM rooms WHERE id=?'+(lock?' FOR UPDATE':''),id);
   if(!r||!await db.get('SELECT * FROM members WHERE room=? AND "user"=?',id,user.id))throw new HttpError(404,'Match not found.');
-  return r;
+  return currentRoom(db,r);
  }
  app.get('/api/health',route(async({db})=>{
   // Readiness checks do not create profiles or reveal player records.
@@ -41,7 +59,9 @@ export function createApp(store,{serveStatic=true}={}) {
   return db.get('SELECT * FROM users WHERE id=?',user.id);
  }));
  app.get('/api/dashboard',route(async({db,user})=>{
-  const rooms=(await db.all('SELECT r.* FROM rooms r JOIN members m ON m.room=r.id WHERE m."user"=? ORDER BY r.created DESC',user.id)).map(r=>({...r,state:publicGame(JSON.parse(r.state),user.id)}));
+  const rows=await db.all('SELECT r.* FROM rooms r JOIN members m ON m.room=r.id WHERE m."user"=? ORDER BY r.created DESC,r.id DESC',user.id);
+  const rooms=[];
+  for(const row of rows){const r=await currentRoom(db,row);rooms.push({...r,state:publicGame(JSON.parse(r.state),user.id)});}
   const users=(await db.all('SELECT id,name,country FROM users WHERE family=?',user.family)).map(u=>({...u,wins:0,played:0,points:0}));
   for(const r of await db.all('SELECT state FROM rooms WHERE family=? AND practice=0',user.family)){
    const g=JSON.parse(r.state);if(g.status==='completed')for(const p of g.players){const u=users.find(u=>u.id===p.id);if(u){u.played++;if(g.winner===u.id){u.wins++;u.points+=g.points;}}}
@@ -52,7 +72,7 @@ export function createApp(store,{serveStatic=true}={}) {
   const practice=!!req.body.practice,id=randomUUID(),code=randomBytes(5).toString('hex');
   const players=[{id:user.id,name:user.name,country:user.country}];
   if(practice)players.push({id:'bot-mia',name:'Mia',country:'United Kingdom',bot:true});
-  const g=practice?createGame(players):{rulesVersion:2,players,status:'waiting',builds:[[]],turn:0,log:[],deck:[],recycle:[]};
+  const g=practice?createGame(players):{rulesVersion:3,players,status:'waiting',builds:[[]],turn:0,log:[],deck:[],recycle:[]};
   await db.run('INSERT INTO rooms(id,title,family,host,practice,code,state,created) VALUES(?,?,?,?,?,?,?,?)',id,clean(req.body.title)||'Sunday family table',user.family,user.id,Number(practice),code,JSON.stringify(g),new Date().toISOString());
   await db.run('INSERT INTO members(room,"user") VALUES(?,?)',id,user.id);
   if(practice)await db.run('INSERT INTO messages(room,"user",name,body,created) VALUES(?,?,?,?,?)',id,'system','Spite n Malice','Welcome to your practice table. Your progress is saved after every move.',new Date().toISOString());

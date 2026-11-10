@@ -42,6 +42,7 @@ import {
 import "./style.css";
 import "./comic.css";
 import "./table.css";
+import "./focus.css";
 import GameTable from "./GameTable.jsx";
 // Preserve existing player sessions and recovery-file compatibility after rebranding.
 const tokenKey = "kindred-token";
@@ -149,9 +150,24 @@ function App() {
     [message, setMessage] = useState(""),
     [sound, setSound] = useState(false),
     [copied, setCopied] = useState(false),
-    [connected, setConnected] = useState(false);
+    [connected, setConnected] = useState(false),
+    [boardPanel, setBoardPanel] = useState(null);
   const chatBottom = useRef(null),
     initialized = useRef(false);
+  useEffect(() => {
+    setBoardPanel(null);
+  }, [page, room?.id]);
+  useEffect(() => {
+    setSelected(null);
+  }, [room?.id, room?.version]);
+  useEffect(() => {
+    if (!boardPanel) return;
+    const close = (event) => {
+      if (event.key === "Escape") setBoardPanel(null);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [boardPanel]);
   async function refresh() {
     const d = await api("/dashboard");
     setDashboard(d);
@@ -333,7 +349,16 @@ function App() {
     ["history", History, "Match history"],
   ];
   return (
-    <div className={"app-shell " + (page === "table" ? "table-screen" : "")}>
+    <div
+      className={
+        "app-shell " +
+        (page === "table" ? "table-screen " : "") +
+        (page === "table" && g && g.status !== "waiting" && !loading
+          ? "board-only "
+          : "") +
+        (boardPanel === "chat" ? "chat-open" : "")
+      }
+    >
       <aside className="sidebar">
         <a
           className="brand"
@@ -783,6 +808,9 @@ function App() {
                       selected={selected}
                       onSelect={setSelected}
                       onNewGame={() => setModal({ type: "create" })}
+                      onExit={() => setPage("history")}
+                      onChat={() => setBoardPanel("chat")}
+                      connected={connected}
                       onPlay={play}
                       onDiscard={discard}
                       busy={busy}
@@ -832,7 +860,19 @@ function App() {
                   </button>
                 </div>
               </div>
-              <aside className="right-rail">
+              {boardPanel === "chat" && (
+                <button
+                  className="chat-drawer-backdrop"
+                  aria-label="Close table talk"
+                  onClick={() => setBoardPanel(null)}
+                />
+              )}
+              <aside
+                className="right-rail"
+                role={boardPanel === "chat" ? "dialog" : undefined}
+                aria-modal={boardPanel === "chat" ? true : undefined}
+                aria-label={boardPanel === "chat" ? "Table talk" : undefined}
+              >
                 <section className="chat-panel">
                   <div className="section-head">
                     <h2>
@@ -841,6 +881,13 @@ function App() {
                     <span className="soft-tag">
                       {room?.practice ? "Practice" : "Family only"}
                     </span>
+                    <button
+                      className="board-chat-close"
+                      aria-label="Close chat"
+                      onClick={() => setBoardPanel(null)}
+                    >
+                      <X size={22} />
+                    </button>
                   </div>
                   <div className="chat-welcome">
                     <span>🔥</span>
@@ -1513,6 +1560,13 @@ function ModalContent({
           Be the first to empty your 20-card stock. Your hand and discard piles
           help you get there.
         </p>
+        <div className="friendly-note">
+          <p>
+            Aces dealt or drawn for your hand go straight to the table.
+            Replacement cards are drawn until you have five non-aces, or the
+            draw pile is exhausted.
+          </p>
+        </div>
         <ol className="rules">
           <li>
             <strong>Build together.</strong> Shared piles run from A through Q

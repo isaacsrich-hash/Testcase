@@ -7,6 +7,9 @@ import {
   Lightbulb,
   BookOpen,
   ArrowRight,
+  ArrowLeft,
+  Eye,
+  X,
   MessageCircle,
   ShieldCheck,
 } from "lucide-react";
@@ -107,6 +110,95 @@ function readDrag(event) {
     return null;
   }
 }
+function DiscardPile({
+  pile,
+  index,
+  player,
+  own,
+  selected,
+  onSelect,
+  onDiscard,
+  canAct,
+  busy,
+  onInspect,
+}) {
+  const viewport = useRef(null);
+  useEffect(() => {
+    const el = viewport.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [pile.length]);
+  return (
+    <div className="discard-stack">
+      <div
+        className="pile-viewport"
+        ref={viewport}
+        role="region"
+        aria-label={`${own ? "Your" : player.name + "’s"} discard pile ${index + 1} stack`}
+        tabIndex={pile.length > 3 ? 0 : undefined}
+        onDragOver={(event) => {
+          if (canAct) event.preventDefault();
+        }}
+        onDrop={(event) => {
+          event.preventDefault();
+          const card = readDrag(event);
+          if (canAct && card?.source === "hand") onDiscard(index, card);
+        }}
+      >
+        <div className="discard-peek">
+          {pile.slice(0, -1).map((card, i) => (
+            <span
+              className={`peek-label ${["♥", "♦"].includes(suitOf(card)) ? "red-suit" : ""}`}
+              key={card.id || i}
+              aria-label={cardName(card)}
+            >
+              <b>{rankLabel(rankOf(card))}</b>
+              <small
+                className={["♥", "♦"].includes(suitOf(card)) ? "red-text" : ""}
+              >
+                {suitOf(card)}
+              </small>
+            </span>
+          ))}
+        </div>
+        <PlayingCard
+          small
+          value={pile.at(-1)}
+          empty={!pile.length}
+          selected={
+            own && selected?.source === "discard" && selected.index === index
+          }
+          disabled={!canAct || busy}
+          onClick={
+            own
+              ? () =>
+                  selected?.source === "hand"
+                    ? onDiscard(index)
+                    : pile.length
+                      ? onSelect({ source: "discard", index })
+                      : null
+              : undefined
+          }
+          label={
+            own
+              ? `Discard pile ${index + 1}${pile.length ? ", top card " + cardName(pile.at(-1)) : ", empty"}`
+              : `${player.name} discard pile ${index + 1}`
+          }
+        />
+      </div>
+      {pile.length > 1 ? (
+        <button
+          className="pile-inspect"
+          onClick={() => onInspect({ playerId: player.id, index })}
+          aria-label={`See all ${pile.length} cards in ${own ? "your" : player.name + "’s"} discard pile ${index + 1}`}
+        >
+          <Eye size={12} /> {pile.length} cards
+        </button>
+      ) : (
+        <span className="pile-number">{index + 1}</span>
+      )}
+    </div>
+  );
+}
 function Seat({
   player,
   own,
@@ -117,6 +209,7 @@ function Seat({
   busy,
   discardMode,
   current,
+  onInspect,
 }) {
   const hand = player.hand || [],
     piles = player.discards || [[], [], [], []];
@@ -177,59 +270,19 @@ function Seat({
       >
         <div className="discard-piles">
           {piles.map((pile, index) => (
-            <div
-              className="discard-stack"
-              style={{
-                "--peek-offset": `${Math.min(2, Math.max(0, pile.length - 1)) * 11}px`,
-              }}
+            <DiscardPile
               key={index}
-              onDragOver={(event) => {
-                if (canAct) event.preventDefault();
-              }}
-              onDrop={(event) => {
-                event.preventDefault();
-                const card = readDrag(event);
-                if (canAct && card?.source === "hand") onDiscard(index, card);
-              }}
-            >
-              <div className="discard-peek" aria-hidden="true">
-                {pile.slice(-3, -1).map((card, i) => (
-                  <span key={i} style={{ top: i * 11 }}>
-                    {rankLabel(rankOf(card))}
-                    <small
-                      className={
-                        ["♥", "♦"].includes(suitOf(card)) ? "red-text" : ""
-                      }
-                    >
-                      {suitOf(card)}
-                    </small>
-                  </span>
-                ))}
-              </div>
-              <PlayingCard
-                small
-                value={pile.at(-1)}
-                empty={!pile.length}
-                selected={selectionIs("discard", index)}
-                disabled={!canAct || busy}
-                onClick={
-                  own
-                    ? () =>
-                        selected?.source === "hand"
-                          ? onDiscard(index)
-                          : pile.length
-                            ? onSelect({ source: "discard", index })
-                            : null
-                    : undefined
-                }
-                label={
-                  own
-                    ? `Discard pile ${index + 1}${pile.length ? ", top card " + cardName(pile.at(-1)) : ", empty"}`
-                    : `${player.name} discard pile ${index + 1}`
-                }
-                style={{}}
-              />
-            </div>
+              pile={pile}
+              index={index}
+              player={player}
+              own={own}
+              selected={selected}
+              onSelect={onSelect}
+              onDiscard={onDiscard}
+              canAct={canAct}
+              busy={busy}
+              onInspect={onInspect}
+            />
           ))}
         </div>
         <span className="zone-title">
@@ -286,13 +339,17 @@ export default function GameTable({
   onOptions,
   onToast,
   onNewGame,
+  onExit,
+  onChat,
+  connected = true,
   busy,
   sound,
   onSound,
 }) {
   const [discardMode, setDiscardMode] = useState(false),
     [hintTarget, setHintTarget] = useState(null),
-    [logOpen, setLogOpen] = useState(false);
+    [logOpen, setLogOpen] = useState(false),
+    [inspected, setInspected] = useState(null);
   const buildsEnd = useRef(null),
     logEnd = useRef(null);
   const me = g.players.find((p) => p.id === user.id),
@@ -314,6 +371,16 @@ export default function GameTable({
       if (piles) piles.scrollTop = piles.scrollHeight;
     }
   }, [activePiles]);
+  useEffect(() => {
+    if (!inspected) return;
+    const close = (event) => {
+      if (event.key === "Escape") setInspected(null);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [inspected]);
+  const viewedPlayer = g.players.find((p) => p.id === inspected?.playerId);
+  const viewedPile = viewedPlayer?.discards?.[inspected?.index];
   function pickCard(card) {
     setHintTarget(null);
     onSelect(card);
@@ -361,6 +428,9 @@ export default function GameTable({
           SPITE <i>n</i> MALICE<span>THE CARD TABLE</span>
         </div>
         <div className="table-meta">
+          <button className="exit-game" onClick={onExit}>
+            <ArrowLeft size={15} /> Matches
+          </button>
           <button className="classic-new-game" onClick={onNewGame}>
             <Plus size={15} /> New family game
           </button>
@@ -393,6 +463,7 @@ export default function GameTable({
             selected={null}
             onSelect={() => {}}
             onDiscard={() => {}}
+            onInspect={setInspected}
             canAct={false}
             current={
               g.status === "active" && g.players[g.turn]?.id === player.id
@@ -570,6 +641,7 @@ export default function GameTable({
         selected={selected}
         onSelect={pickCard}
         onDiscard={onDiscard}
+        onInspect={setInspected}
         canAct={myTurn}
         busy={busy}
         discardMode={discardMode}
@@ -577,18 +649,59 @@ export default function GameTable({
       />
       <footer className="classic-table-footer">
         <span>
-          <ShieldCheck size={15} /> Every move saved automatically
+          <ShieldCheck size={15} />{" "}
+          {busy
+            ? "Saving…"
+            : connected
+              ? "Every move saved automatically"
+              : "Reconnecting — saved progress is kept"}
         </span>
-        <button
-          onClick={() =>
-            document
-              .querySelector(".chat-panel")
-              ?.scrollIntoView({ behavior: "smooth", block: "start" })
-          }
-        >
+        <button onClick={onChat}>
           <MessageCircle size={16} /> Table talk
         </button>
       </footer>
+      {viewedPile && (
+        <div
+          className="pile-inspection-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setInspected(null);
+          }}
+        >
+          <section
+            className="pile-inspection"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Discard pile ${inspected.index + 1} cards`}
+          >
+            <button
+              className="pile-inspection-close"
+              aria-label="Close discard pile"
+              onClick={() => setInspected(null)}
+            >
+              <X size={22} />
+            </button>
+            <h2>
+              {viewedPlayer.id === user.id ? "Your" : viewedPlayer.name + "’s"}{" "}
+              discard pile {inspected.index + 1}
+            </h2>
+            <p>Bottom → top. Only the top card can be played.</p>
+            <div className="inspected-cards">
+              {viewedPile.map((card, i) => (
+                <div key={card.id || i}>
+                  <PlayingCard value={card} />
+                  <span>
+                    {i === viewedPile.length - 1
+                      ? "TOP CARD"
+                      : i === 0
+                        ? "BOTTOM CARD"
+                        : `Card ${i + 1}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

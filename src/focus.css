@@ -1,0 +1,580 @@
+/* Play mode contains only the felt board. Other app areas remain reachable
+   through board controls, and table talk opens on demand. */
+.board-only > .sidebar,
+.board-only .topbar,
+.board-only .site-footer,
+.board-only .below-table {
+  display: none;
+}
+.board-only .workspace {
+  padding: 0;
+  min-height: 100dvh;
+  margin: 0;
+  width: 100%;
+}
+.board-only main {
+  max-width: none;
+  margin: 0;
+  padding: 8px;
+}
+.board-only .classic-table {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 16px);
+  padding: 22px;
+  scroll-margin-top: 8px;
+}
+.board-only .table-middle {
+  flex: 1;
+  min-height: 260px;
+  padding: 20px 0 26px;
+}
+.board-only .table-help .how-panel {
+  display: none;
+}
+.board-only .game-log > div {
+  max-height: 90px;
+}
+.board-only .player-lane {
+  padding-top: 6px;
+  padding-bottom: 10px;
+}
+.board-only .classic-table-header {
+  padding-bottom: 18px;
+}
+.board-only .classic-table-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+}
+.board-only .right-rail {
+  display: none;
+}
+.board-chat-close,
+.chat-drawer-backdrop {
+  display: none;
+}
+.board-only.chat-open .chat-drawer-backdrop {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: #071e195c;
+  backdrop-filter: blur(2px);
+  border: 0;
+  padding: 0;
+}
+.board-only.chat-open .right-rail {
+  display: block;
+  position: fixed;
+  z-index: 90;
+  right: 20px;
+  top: 20px;
+  bottom: 20px;
+  margin: 0;
+  width: min(430px, calc(100vw - 32px));
+  background: #faf9ef;
+  border: 2px solid #ad9958;
+  border-radius: 13px;
+  box-shadow: 0 12px 65px #001e1b70;
+  overflow: hidden;
+}
+.board-only.chat-open .right-rail > .leader-panel,
+.board-only.chat-open .right-rail > .timezone-note {
+  display: none;
+}
+.board-only.chat-open .chat-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  background: #faf9ef;
+}
+.board-only.chat-open .chat-messages {
+  height: auto;
+  min-height: 100px;
+  flex: 1;
+  overflow: auto;
+}
+.board-only.chat-open .chat-panel .section-head {
+  gap: 12px;
+}
+.board-only.chat-open .chat-panel .section-head h2 {
+  flex: 1;
+}
+.board-only.chat-open .board-chat-close {
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  color: #5a705c;
+  background: transparent;
+  border: 0;
+}
+.table-meta .exit-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 35px;
+  width: auto;
+  height: auto;
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #d9cc9a;
+  white-space: nowrap;
+}
+/* Every buried discard shows a complete rank-and-suit strip. Long piles scroll
+   independently and also have an expanded full-card view. */
+.discard-piles {
+  align-items: flex-start;
+  min-height: 155px;
+  padding-top: 3px;
+  overflow: visible;
+}
+.discard-stack {
+  padding-top: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 72px;
+  flex-shrink: 0;
+}
+.pile-viewport {
+  max-height: 232px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  padding: 0 0 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #dec678 #244d38;
+  overscroll-behavior: contain;
+  border-radius: 7px;
+}
+.pile-viewport:focus-visible {
+  outline: 2px solid #7fd5ed;
+  outline-offset: 3px;
+}
+.pile-viewport .discard-peek {
+  position: static;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.pile-viewport .discard-peek > .peek-label {
+  position: static;
+  top: auto;
+  left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 28px;
+  height: 28px;
+  width: 72px;
+  padding: 3px 7px;
+  background: #f7f3e5;
+  border: 1px solid #d8d7bd;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 -1px 2px #001d1940;
+  font-family: Georgia, serif;
+  font-size: 19px;
+  color: #27392d;
+  line-height: 1;
+}
+.peek-label b {
+  font-weight: 700;
+}
+.peek-label small {
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+.pile-viewport .playing-card {
+  display: flex;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+.pile-inspect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 25px;
+  margin-top: 5px;
+  padding: 3px 5px;
+  background: #0d352680;
+  color: #d6c889;
+  border: 1px solid #887d4559;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pile-inspect:hover {
+  background: #28503a;
+}
+.pile-number {
+  font-size: 10px;
+  color: #a2b89b;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+.pile-inspection-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 120;
+  background: #061f19b5;
+  backdrop-filter: blur(3px);
+}
+.pile-inspection {
+  position: relative;
+  background: #f8f5e9;
+  color: #315342;
+  border: 2px solid #c0a75c;
+  border-radius: 14px;
+  width: min(760px, 100%);
+  max-height: 85dvh;
+  overflow-y: auto;
+  padding: 28px;
+  box-shadow: 0 10px 65px #001b1b80;
+}
+.pile-inspection h2 {
+  font-family: Georgia, serif;
+  font-size: 25px;
+  font-weight: 700;
+  margin: 0 30px 12px 0;
+}
+.pile-inspection p {
+  font-size: 15px;
+  color: #7d8c75;
+  line-height: 1.7;
+  margin: 0 0 22px;
+}
+.pile-inspection-close {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #73806b;
+  padding: 5px;
+  border: 0;
+}
+.inspected-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px 18px;
+  align-items: flex-start;
+}
+.inspected-cards > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.inspected-cards > div > span {
+  font-size: 11px;
+  font-weight: 800;
+  color: #83906f;
+  letter-spacing: 0.5px;
+}
+.inspected-cards .playing-card {
+  --card-w: 88px;
+  --card-h: 130px;
+  box-shadow: 0 2px 5px #6f7c6130;
+}
+.inspected-cards > div:last-child .playing-card {
+  outline: 2px solid #bfa64d;
+  outline-offset: 3px;
+}
+@media (min-width: 1500px) {
+  .discard-stack,
+  .pile-viewport .discard-peek > .peek-label {
+    width: 78px;
+  }
+  .pile-viewport {
+    max-height: 250px;
+  }
+  .pile-viewport .discard-peek > .peek-label {
+    height: 30px;
+    min-height: 30px;
+    font-size: 20px;
+  }
+  .peek-label small {
+    font-size: 18px;
+  }
+}
+@media (max-width: 1150px) {
+  .discard-stack,
+  .pile-viewport .discard-peek > .peek-label {
+    width: 61px;
+  }
+  .pile-viewport {
+    max-height: 219px;
+  }
+  .pile-viewport .discard-peek > .peek-label {
+    gap: 7px;
+    font-size: 18px;
+    height: 28px;
+    min-height: 28px;
+    padding: 3px 6px;
+  }
+  .pile-inspect {
+    font-size: 10px;
+    padding: 3px 4px;
+  }
+  .board-only .classic-table {
+    padding: 20px;
+  }
+  .table-meta .exit-game {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+}
+@media (max-width: 960px) and (min-width: 761px) {
+  .discard-stack,
+  .pile-viewport .discard-peek > .peek-label {
+    width: 53px;
+  }
+  .pile-viewport {
+    max-height: 195px;
+  }
+  .pile-viewport .discard-peek > .peek-label {
+    font-size: 17px;
+    height: 26px;
+    min-height: 26px;
+    gap: 5px;
+  }
+  .peek-label small {
+    font-size: 15px;
+  }
+  .pile-inspect {
+    font-size: 9px;
+    gap: 3px;
+  }
+  .pile-inspect svg {
+    width: 10px;
+  }
+}
+@media (max-width: 760px) {
+  .board-only main {
+    padding: 5px;
+  }
+  .board-only .workspace {
+    padding: 0;
+  }
+  .board-only .classic-table {
+    min-height: calc(100dvh - 10px);
+    padding: 17px 10px 13px;
+    scroll-margin-top: 5px;
+  }
+  .board-only .table-middle {
+    display: contents;
+    flex: none;
+    padding: 0;
+  }
+  .board-only .centre-area {
+    order: 2;
+  }
+  .board-only .table-help {
+    display: none;
+  }
+  .board-only .table-controls {
+    order: 5;
+  }
+  .board-only .classic-turn {
+    order: 3;
+  }
+  .board-only .own-lane {
+    order: 4;
+  }
+  .board-only .classic-table-footer {
+    order: 6;
+  }
+  .board-only .classic-table-header {
+    order: 0;
+    padding-bottom: 17px;
+  }
+  .board-only .opponent-lanes {
+    order: 1;
+  }
+  .board-only .player-lane {
+    padding-top: 7px;
+    padding-bottom: 12px;
+  }
+  .board-only.chat-open .right-rail {
+    top: 9px;
+    right: 9px;
+    bottom: 9px;
+    width: calc(100vw - 18px);
+    border-radius: 11px;
+  }
+  .table-meta .exit-game {
+    font-size: 11px;
+    min-height: 31px;
+    padding: 6px 9px;
+  }
+  .table-meta .exit-game svg {
+    width: 13px;
+  }
+  .board-only .toast {
+    bottom: 16px;
+  }
+  .discard-piles {
+    min-height: 93px;
+    gap: 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: flex-start;
+    padding: 3px 2px 6px;
+  }
+  .discard-stack {
+    width: 34px;
+    min-width: 34px;
+  }
+  .pile-viewport {
+    max-height: 166px;
+    border-radius: 5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .pile-viewport .discard-peek > .peek-label {
+    width: 34px;
+    min-height: 25px;
+    height: 25px;
+    gap: 3px;
+    padding: 3px 3px;
+    font-size: 15px;
+    line-height: 1;
+    border-radius: 5px 5px 0 0;
+  }
+  .peek-label small {
+    font-size: 12px;
+  }
+  .pile-viewport .playing-card {
+    --card-w: 34px;
+    --card-h: 57px;
+  }
+  .pile-inspect {
+    width: 100%;
+    font-size: 8px;
+    padding: 4px 1px;
+    gap: 0;
+    line-height: 1.3;
+    white-space: normal;
+    border-radius: 4px;
+    min-height: 24px;
+  }
+  .pile-inspect svg {
+    display: none;
+  }
+  .pile-number {
+    font-size: 9px;
+    margin-top: 6px;
+  }
+  .pile-inspection-backdrop {
+    padding: 15px;
+  }
+  .pile-inspection {
+    padding: 25px 19px;
+    width: 100%;
+    max-height: 88dvh;
+  }
+  .pile-inspection h2 {
+    font-size: 23px;
+    line-height: 1.4;
+  }
+  .pile-inspection p {
+    font-size: 14px;
+  }
+  .inspected-cards {
+    gap: 20px 16px;
+    justify-content: flex-start;
+  }
+  .inspected-cards .playing-card {
+    --card-w: 73px;
+    --card-h: 108px;
+  }
+  .inspected-cards > div > span {
+    font-size: 10px;
+  }
+  .board-only .classic-table-footer {
+    margin-top: 16px;
+  }
+  .board-only .classic-turn > small {
+    font-size: 12px;
+  }
+}
+@media (max-width: 370px) {
+  .board-only main {
+    padding: 4px;
+  }
+  .board-only .classic-table {
+    padding: 15px 8px 12px;
+    min-height: calc(100dvh - 8px);
+  }
+  .discard-stack {
+    width: 32px;
+    min-width: 32px;
+  }
+  .pile-viewport .discard-peek > .peek-label {
+    width: 32px;
+    padding: 3px 2px;
+    gap: 3px;
+    font-size: 15px;
+    min-height: 24px;
+    height: 24px;
+  }
+  .peek-label small {
+    font-size: 12px;
+  }
+  .pile-viewport .playing-card {
+    --card-w: 32px;
+    --card-h: 54px;
+  }
+  .pile-viewport {
+    max-height: 155px;
+  }
+  .pile-inspect {
+    font-size: 8px;
+  }
+  .inspected-cards {
+    gap: 20px 13px;
+  }
+  .inspected-cards .playing-card {
+    --card-w: 68px;
+    --card-h: 102px;
+  }
+  .table-meta .exit-game {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
+.board-only main > .error {
+  display: none;
+}
+.pile-viewport .discard-peek > .peek-label.red-suit {
+  color: #b02243;
+}
+
+@media (max-width: 760px) {
+  .shared-build .king-card .corner small {
+    display: none;
+  }
+  .shared-build .playing-card .king-assignment {
+    gap: 4px;
+    margin-top: 3px;
+    line-height: 1;
+  }
+}

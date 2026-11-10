@@ -29,7 +29,7 @@ export function shuffledDeck() {
 }
 export function createGame(players) {
   const g = {
-    rulesVersion: 2,
+    rulesVersion: 3,
     deck: shuffledDeck(),
     recycle: [],
     players: players.map((p) => ({
@@ -47,10 +47,8 @@ export function createGame(players) {
     moves: 0,
     log: [],
   };
-  for (const p of g.players) {
-    p.stock = g.deck.splice(-20);
-    p.hand = g.deck.splice(-5);
-  }
+  for (const p of g.players) p.stock = g.deck.splice(-20);
+  for (const p of g.players) fill(g, p);
   return g;
 }
 export function normalizeGame(g) {
@@ -63,13 +61,41 @@ export function normalizeGame(g) {
     g.builds.push([]);
     g.turnCount ??= 0;
   }
+  if (g.status === "active" && g.rulesVersion < 3) {
+    const handSizes = g.players.map((p) => p.hand.length);
+    for (const p of g.players) {
+      const keep = [];
+      for (const card of p.hand) {
+        if (rankOf(card) === 1) tableAce(g, p, card);
+        else keep.push(card);
+      }
+      p.hand = keep;
+    }
+    g.players.forEach((p, index) => fill(g, p, handSizes[index]));
+    g.rulesVersion = 3;
+    g.log = g.log.slice(-30);
+  }
   return g;
 }
-function fill(g, p) {
-  while (p.hand.length < 5) {
+function tableAce(g, p, card) {
+  let index = g.builds.findIndex((pile) => pile.length === 0);
+  if (index < 0) {
+    index = g.builds.length;
+    g.builds.push([]);
+  }
+  g.builds[index].push(card);
+  g.builds.push([]);
+  g.log.push(
+    `${p.name} drew ${cardLabel(card)} → table pile ${index + 1} automatically.`,
+  );
+}
+function fill(g, p, target = 5) {
+  while (p.hand.length < target) {
     if (!g.deck.length) g.deck = shuffle(g.recycle.splice(0));
     if (!g.deck.length) break;
-    p.hand.push(g.deck.pop());
+    const card = g.deck.pop();
+    if (rankOf(card) === 1) tableAce(g, p, card);
+    else p.hand.push(card);
   }
 }
 export function move(g, id, action) {
@@ -172,7 +198,8 @@ export function botTurn(g) {
   }
 }
 export function publicGame(g, id) {
-  normalizeGame(g);
+  // Room upgrades are committed by the API before serialization. Reads must not
+  // re-deal or shuffle independently across concurrent clients.
   return {
     ...g,
     deck: undefined,
